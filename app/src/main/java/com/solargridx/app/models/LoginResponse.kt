@@ -1,8 +1,17 @@
 package com.solargridx.app.models
 
+import com.google.gson.annotations.SerializedName
+
 data class LoginResponse(
-    val success: Boolean,
+    @SerializedName("success", alternate = ["isSuccess", "Success"])
+    val success: Boolean = true,
+
+    @SerializedName("message", alternate = ["Message", "error"])
     val message: String? = null,
-    val user: User? = null,
-    val token: String? = null
+
+    @SerializedName("token", alternate = ["Token", "accessToken", "jwt"])
+    val token: String? = null,
+
+    @SerializedName("user", alternate = ["User", "data"])
+    val user: User? = null
 )

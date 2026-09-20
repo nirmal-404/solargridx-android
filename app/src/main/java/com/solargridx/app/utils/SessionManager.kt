@@ -1,39 +1,35 @@
 package com.solargridx.app.utils
 
 import android.content.Context
-import android.content.SharedPreferences
+import com.solargridx.app.database.AppDatabaseHelper
+import com.solargridx.app.models.User
 
 class SessionManager(context: Context) {
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
-    fun saveAuthToken(token: String) {
-        prefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
+    private val dbHelper = AppDatabaseHelper(context)
+
+    fun saveUserSession(user: User, token: String) {
+        dbHelper.saveUserSession(user, token)
     }
 
     fun fetchAuthToken(): String? {
-        return prefs.getString(KEY_AUTH_TOKEN, null)
-    }
-
-    fun saveUserEmail(email: String) {
-        prefs.edit().putString(KEY_USER_EMAIL, email).apply()
+        return dbHelper.getUserSession()?.token
     }
 
     fun fetchUserEmail(): String? {
-        return prefs.getString(KEY_USER_EMAIL, null)
+        val user = dbHelper.getUserSession()
+        return user?.fullName ?: user?.email ?: user?.nic
+    }
+
+    fun fetchUser(): User? {
+        return dbHelper.getUserSession()
     }
 
     fun clearSession() {
-        prefs.edit().clear().apply()
+        dbHelper.clearUserSession()
     }
 
     fun isLoggedIn(): Boolean {
         return !fetchAuthToken().isNullOrEmpty()
-    }
-
-    companion object {
-        private const val PREF_NAME = "solargridx_session"
-        private const val KEY_AUTH_TOKEN = "auth_token"
-        private const val KEY_USER_EMAIL = "user_email"
     }
 }
