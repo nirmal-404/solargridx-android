@@ -1,4 +1,0 @@
-# Copy to local.properties and set your machine-specific Android SDK path.
-# Use forward slashes on Windows. Never commit local.properties.
-# sdk.dir=C:/Users/YOUR_USER/AppData/Local/Android/Sdk
-MAPS_API_KEY=

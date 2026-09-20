@@ -1,4 +1,22 @@
 <resources>
     <string name="app_name">SolarGridX</string>
-    <string name="starter_message">Smart Solar Microgrid Trading System</string>
+    <string name="starter_message">Smart Solar Microgrid Energy Trading &amp; Booking Portal</string>
+    <string name="title_login">Sign In</string>
+    <string name="subtitle_login">Enter your credentials to access your microgrid account</string>
+    <string name="label_email">Email address</string>
+    <string name="hint_email">name@example.com</string>
+    <string name="label_password">Password</string>
+    <string name="hint_password">••••••••</string>
+    <string name="action_login">Sign In</string>
+    <string name="quick_test_accounts">Quick Test Accounts:</string>
+    <string name="role_backoffice">Backoffice</string>
+    <string name="role_operator">Operator</string>
+    <string name="role_prosumer">Prosumer</string>
+    <string name="error_invalid_email">Please enter a valid email address</string>
+    <string name="error_empty_password">Password cannot be empty</string>
+    <string name="error_short_password">Password must be at least 6 characters</string>
+    <string name="error_login_failed">Invalid email or password</string>
+    <string name="success_login">Login successful</string>
+    <string name="welcome_user">Welcome, %1$s!</string>
+    <string name="action_logout">Log Out</string>
 </resources>
