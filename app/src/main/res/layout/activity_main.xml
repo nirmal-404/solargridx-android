@@ -4,22 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     android:padding="32dp"
     tools:context=".ui.MainActivity">
 
     <ImageView
         android:layout_width="64dp"
         android:layout_height="64dp"
+        android:background="@drawable/bg_logo"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_solar_logo" />
+        android:padding="14dp"
+        android:src="@drawable/ic_sun" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/app_name"
+        android:textColor="#09090B"
         android:textSize="28sp"
         android:textStyle="bold" />
 
@@ -29,17 +32,46 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/starter_message"
-        android:textAppearance="?attr/textAppearanceBodyMedium" />
+        android:textColor="#71717A"
+        android:textSize="13sp" />
 
-    <TextView
-        android:id="@+id/tvUserEmail"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:textAppearance="?attr/textAppearanceBodyLarge"
-        android:textColor="?attr/colorPrimary"
-        android:textStyle="bold"
-        tools:text="Logged in as user@example.com" />
+        android:layout_marginTop="32dp"
+        app:cardBackgroundColor="#F0FDF4"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeColor="#BBF7D0"
+        app:strokeWidth="1dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login Successful!"
+                android:textColor="#166534"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvUserEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="#15803D"
+                android:textSize="14sp"
+                tools:text="Logged in as: user@solargridx.com" />
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
@@ -47,6 +79,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="@string/action_logout" />
+        android:text="@string/action_logout"
+        android:textColor="#09090B"
+        app:strokeColor="#E4E4E7" />
 
 </LinearLayout>

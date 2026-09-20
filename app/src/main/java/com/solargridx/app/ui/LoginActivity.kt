@@ -2,7 +2,6 @@ package com.solargridx.app.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -12,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.solargridx.app.R
 import com.solargridx.app.databinding.ActivityLoginBinding
+import com.solargridx.app.models.User
 import com.solargridx.app.utils.SessionManager
 import kotlinx.coroutines.launch
 
@@ -71,7 +71,7 @@ class LoginActivity : AppCompatActivity() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
 
-        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (email.isEmpty()) {
             binding.tilEmail.error = getString(R.string.error_invalid_email)
             isValid = false
         } else {
@@ -80,9 +80,6 @@ class LoginActivity : AppCompatActivity() {
 
         if (password.isEmpty()) {
             binding.tilPassword.error = getString(R.string.error_empty_password)
-            isValid = false
-        } else if (password.length < 6) {
-            binding.tilPassword.error = getString(R.string.error_short_password)
             isValid = false
         } else {
             binding.tilPassword.error = null
@@ -104,11 +101,18 @@ class LoginActivity : AppCompatActivity() {
                         }
                         is LoginUiState.Success -> {
                             showLoading(false)
-                            sessionManager.saveAuthToken(state.token)
-                            sessionManager.saveUserEmail(state.user.email)
+                            val inputEmail = binding.etEmail.text.toString().trim()
+                            val userToSave = state.user ?: User(email = inputEmail, fullName = inputEmail)
+                            sessionManager.saveUserSession(userToSave, state.token)
+
+                            val userDisplayName = userToSave.fullName
+                                ?: userToSave.email
+                                ?: userToSave.nic
+                                ?: inputEmail
+
                             Toast.makeText(
                                 this@LoginActivity,
-                                getString(R.string.welcome_user, state.user.fullName),
+                                getString(R.string.welcome_user, userDisplayName),
                                 Toast.LENGTH_SHORT
                             ).show()
                             navigateToMain()

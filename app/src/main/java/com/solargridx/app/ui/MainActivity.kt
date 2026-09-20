@@ -3,7 +3,6 @@ package com.solargridx.app.ui
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.solargridx.app.R
 import com.solargridx.app.databinding.ActivityMainBinding
 import com.solargridx.app.utils.SessionManager
 
@@ -20,10 +19,10 @@ class MainActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
 
         val userEmail = sessionManager.fetchUserEmail()
-        if (userEmail != null) {
-            binding.tvUserEmail.text = getString(R.string.welcome_user, userEmail)
+        if (!userEmail.isNullOrEmpty()) {
+            binding.tvUserEmail.text = "Logged in as: $userEmail"
         } else {
-            binding.tvUserEmail.text = ""
+            binding.tvUserEmail.text = "Logged in successfully"
         }
 
         binding.btnLogout.setOnClickListener {
