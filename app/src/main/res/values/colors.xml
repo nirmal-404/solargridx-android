@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#18181B</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="primary_container">#27272A</color>
+    <color name="on_primary_container">#FAFAFA</color>
+    <color name="surface_background">#F8FAFC</color>
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_border">#E2E8F0</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
+
+    <!-- Status Badge Colors -->
+    <color name="status_pending_fg">#D97706</color>
+    <color name="status_pending_bg">#FEF3C7</color>
+    <color name="status_pending_border">#FDE68A</color>
+
+    <color name="status_approved_fg">#2563EB</color>
+    <color name="status_approved_bg">#DBEAFE</color>
+    <color name="status_approved_border">#BFDBFE</color>
+
+    <color name="status_completed_fg">#475569</color>
+    <color name="status_completed_bg">#F1F5F9</color>
+    <color name="status_completed_border">#E2E8F0</color>
+
+    <color name="status_cancelled_fg">#DC2626</color>
+    <color name="status_cancelled_bg">#FEE2E2</color>
+    <color name="status_cancelled_border">#FECACA</color>
+
+    <color name="status_active_fg">#059669</color>
+    <color name="status_active_bg">#D1FAE5</color>
+    <color name="status_active_border">#A7F3D0</color>
+</resources>

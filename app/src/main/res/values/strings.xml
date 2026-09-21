@@ -19,4 +19,25 @@
     <string name="success_login">Login successful</string>
     <string name="welcome_user">Welcome, %1$s!</string>
     <string name="action_logout">Log Out</string>
+
+    <!-- Member 3 Booking Strings -->
+    <string name="title_dashboard">Reservation Dashboard</string>
+    <string name="subtitle_dashboard">Real-time solar microgrid slot bookings and capacity status</string>
+    <string name="pending_bookings">Pending Queue</string>
+    <string name="approved_future">Approved Future</string>
+    <string name="active_sessions">Active Sessions</string>
+    <string name="completed_bookings">Completed Bookings</string>
+    <string name="action_book_slot">Book Slot</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="title_create_booking">Book Energy Slot</string>
+    <string name="subtitle_create_booking">Reserve solar microgrid energy capacity within the authorized 7-day schedule.</string>
+    <string name="label_station">Microgrid Solar Station</string>
+    <string name="label_slot">Available Energy Slot Window</string>
+    <string name="label_capacity">Requested Capacity (kWh)</string>
+    <string name="action_confirm_booking">Confirm Booking</string>
+    <string name="summary_title">Reservation Summary</string>
+    <string name="summary_subtitle">Operation details confirmed by central microgrid server</string>
+    <string name="action_return_dashboard">Return to Dashboard</string>
+    <string name="notice_12h_warning">Reservations require at least 12 hours notice to update or cancel.</string>
+    <string name="window_7d_warning">Reservations must be scheduled within the next 7 days.</string>
 </resources>

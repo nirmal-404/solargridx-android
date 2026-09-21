@@ -1,86 +1,466 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp"
-    tools:context=".ui.MainActivity">
+    android:background="@color/surface_background"
+    android:fitsSystemWindows="true">
 
-    <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/bg_logo"
-        android:contentDescription="@string/app_name"
-        android:padding="14dp"
-        android:src="@drawable/ic_sun" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/app_name"
-        android:textColor="#09090B"
-        android:textSize="28sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="@string/starter_message"
-        android:textColor="#71717A"
-        android:textSize="13sp" />
-
-    <com.google.android.material.card.MaterialCardView
+    <!-- Top App Bar -->
+    <LinearLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:cardBackgroundColor="#F0FDF4"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:strokeColor="#BBF7D0"
-        app:strokeWidth="1dp">
+        android:layout_alignParentTop="true"
+        android:background="@color/card_background"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="14dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login Successful!"
-                android:textColor="#166534"
+                android:fontFamily="sans-serif-medium"
+                android:text="SolarGridX"
+                android:textColor="@color/text_primary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvUserEmail"
+                android:id="@+id/tvHeaderSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="#15803D"
-                android:textSize="14sp"
-                tools:text="Logged in as: user@solargridx.com" />
-
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="Prosumer • admin@solargridx.local" />
         </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+        <ImageButton
+            android:id="@+id/btnHeaderSettings"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Settings"
+            android:src="@drawable/ic_settings"
+            app:tint="@color/text_primary" />
+    </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogout"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="wrap_content"
+    <!-- Main Content Area (Scrollable) -->
+    <FrameLayout
+        android:id="@+id/contentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomNavigation"
+        android:layout_below="@id/topBar">
+
+        <!-- Dashboard View -->
+        <ScrollView
+            android:id="@+id/layoutDashboard"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Dashboard Title Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="@string/title_dashboard"
+                            android:textColor="@color/text_primary"
+                            android:textSize="20sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/subtitle_dashboard"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnRefresh"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/action_refresh"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <!-- Primary Actions Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnBookSlot"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/action_book_slot"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPendingQueue"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:text="@string/pending_bookings"
+                        app:cornerRadius="8dp" />
+                </LinearLayout>
+
+                <!-- Stat Cards 2x2 Grid -->
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:columnCount="2"
+                    android:rowCount="2">
+
+                    <!-- Pending Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPending"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/status_pending_border"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/pending_bookings"
+                                android:textColor="@color/status_pending_fg"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvPendingCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/text_primary"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="2" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Approved Future Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardApproved"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/status_approved_border"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/approved_future"
+                                android:textColor="@color/status_approved_fg"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvApprovedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/text_primary"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="1" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Active Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardActive"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/status_active_border"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/active_sessions"
+                                android:textColor="@color/status_active_fg"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvActiveCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/text_primary"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="1" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Completed Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardCompleted"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_columnWeight="1"
+                        android:layout_margin="4dp"
+                        app:cardBackgroundColor="@color/card_background"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/status_completed_border"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/completed_bookings"
+                                android:textColor="@color/status_completed_fg"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvCompletedCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:textColor="@color/text_primary"
+                                android:textSize="22sp"
+                                android:textStyle="bold"
+                                tools:text="0" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </GridLayout>
+
+                <!-- Recent Bookings Title -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Recent Bookings"
+                    android:textColor="@color/text_primary"
+                    android:textSize="16sp" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvRecentBookings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_reservation" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- Settings View -->
+        <ScrollView
+            android:id="@+id/layoutSettings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Account &amp; Settings"
+                    android:textColor="@color/text_primary"
+                    android:textSize="22sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Manage your SolarGridX session and profile details"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+
+                <!-- Profile Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    app:cardBackgroundColor="@color/card_background"
+                    app:cardCornerRadius="16dp"
+                    app:strokeColor="@color/card_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:id="@+id/tvSettingsName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            tools:text="Admin User" />
+
+                        <TextView
+                            android:id="@+id/tvSettingsEmail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="13sp"
+                            tools:text="admin@solargridx.local" />
+
+                        <TextView
+                            android:id="@+id/tvSettingsRole"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_status_approved"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:textColor="@color/status_approved_fg"
+                            android:textSize="12sp"
+                            tools:text="Role: Backoffice" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="20dp"
+                            android:background="@color/card_border" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="System Info"
+                            android:textColor="@color/text_primary"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="Server Endpoint: http://10.0.2.2:5205/"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Local Storage: solargridx_local.db"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+
+                        <!-- Log Out Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnLogoutSettings"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="24dp"
+                            android:text="@string/action_logout"
+                            app:backgroundTint="@color/status_cancelled_fg"
+                            app:cornerRadius="8dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/action_logout"
-        android:textColor="#09090B"
-        app:strokeColor="#E4E4E7" />
+        android:layout_alignParentBottom="true"
+        android:background="@color/card_background"
+        app:elevation="8dp"
+        app:itemIconTint="@color/primary"
+        app:itemTextColor="@color/primary"
+        app:menu="@menu/bottom_nav_menu" />
 
-</LinearLayout>
+</RelativeLayout>
