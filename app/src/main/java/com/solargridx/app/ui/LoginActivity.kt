@@ -47,15 +47,15 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnQuickBackoffice.setOnClickListener {
-            fillCredentials("backoffice@solargridx.com", "password123")
+            fillCredentials("admin@solargridx.local", "Admin@1234")
         }
 
         binding.btnQuickOperator.setOnClickListener {
-            fillCredentials("operator@solargridx.com", "password123")
+            fillCredentials("operator@solargridx.local", "Operator@1234")
         }
 
         binding.btnQuickProsumer.setOnClickListener {
-            fillCredentials("prosumer@solargridx.com", "password123")
+            fillCredentials("kamal.silva@prosumer.local", "Prosumer@1234")
         }
     }
 
