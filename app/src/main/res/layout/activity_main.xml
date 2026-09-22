@@ -73,12 +73,22 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <!-- Member 2: launch MapsActivity to view solar station nodes on the map -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="View Node Map"
+        android:textColor="#FFFFFF"
+        app:backgroundTint="#166534" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"
         style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="12dp"
         android:text="@string/action_logout"
         android:textColor="#09090B"
         app:strokeColor="#E4E4E7" />

@@ -25,6 +25,11 @@ class MainActivity : AppCompatActivity() {
             binding.tvUserEmail.text = "Logged in successfully"
         }
 
+        binding.btnViewMap.setOnClickListener {
+            // Member 2: navigate to the station node map screen.
+            startActivity(Intent(this, MapsActivity::class.java))
+        }
+
         binding.btnLogout.setOnClickListener {
             sessionManager.clearSession()
             val intent = Intent(this, LoginActivity::class.java)
