@@ -1,96 +1,696 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="32dp"
+    android:background="#F9FAFB"
     tools:context=".ui.MainActivity">
 
-    <ImageView
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:background="@drawable/bg_logo"
-        android:contentDescription="@string/app_name"
-        android:padding="14dp"
-        android:src="@drawable/ic_sun" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/app_name"
-        android:textColor="#09090B"
-        android:textSize="28sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="@string/starter_message"
-        android:textColor="#71717A"
-        android:textSize="13sp" />
-
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:cardBackgroundColor="#F0FDF4"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:strokeColor="#BBF7D0"
-        app:strokeWidth="1dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- Top Header Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:background="#FFFFFF"
+            android:elevation="1dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_logo"
+                android:contentDescription="@string/app_name"
+                android:padding="8dp"
+                android:src="@drawable/ic_sun" />
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="8dp"
+                android:contentDescription="Home"
+                android:src="@drawable/ic_home"
+                app:tint="#A1A1AA" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Login Successful!"
-                android:textColor="#166534"
-                android:textSize="18sp"
+                android:layout_marginStart="6dp"
+                android:text=">"
+                android:textColor="#A1A1AA"
+                android:textSize="12sp" />
+
+            <!-- Foldable Breadcrumb Tag -->
+            <TextView
+                android:id="@+id/tvBreadcrumbTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_logo"
+                android:clickable="true"
+                android:focusable="true"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text="Dashboard ▾"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
                 android:textStyle="bold" />
 
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <!-- Role Badge -->
             <TextView
-                android:id="@+id/tvUserEmail"
+                android:id="@+id/tvRoleBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="#15803D"
-                android:textSize="14sp"
-                tools:text="Logged in as: user@solargridx.com" />
+                android:background="#18181B"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="GridOperator"
+                android:textColor="#FFFFFF"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <!-- Logout Icon Button -->
+            <ImageButton
+                android:id="@+id/btnLogout"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_logout"
+                android:src="@drawable/ic_logout"
+                app:tint="#52525B" />
 
         </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E4E4E7" />
 
-    <!-- Member 2: launch MapsActivity to view solar station nodes on the map -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnViewMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="View Node Map"
-        android:textColor="#FFFFFF"
-        app:backgroundTint="#166534" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:indeterminate="true"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnLogout"
-        style="@style/Widget.Material3.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/action_logout"
-        android:textColor="#09090B"
-        app:strokeColor="#E4E4E7" />
+        <!-- Main Dashboard Scroll Area -->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
-</LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- MICROGRID PORTAL Foldable Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardPortalNavigation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#E4E4E7"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="12dp">
+
+                        <!-- Portal Header Row (Foldable Toggle) -->
+                        <LinearLayout
+                            android:id="@+id/btnPortalHeader"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingHorizontal="4dp"
+                            android:paddingVertical="6dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:letterSpacing="0.05"
+                                android:text="MICROGRID PORTAL"
+                                android:textColor="#71717A"
+                                android:textSize="12sp"
+                                android:textStyle="bold" />
+
+                            <ImageView
+                                android:id="@+id/ivPortalChevron"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="Toggle Navigation"
+                                android:src="@drawable/ic_chevron_left"
+                                app:tint="#71717A" />
+
+                        </LinearLayout>
+
+                        <!-- Collapsible Content Layout -->
+                        <LinearLayout
+                            android:id="@+id/layoutPortalContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <!-- Menu Navigation Links -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:orientation="vertical">
+
+                                <!-- Dashboard Item -->
+                                <LinearLayout
+                                    android:id="@+id/btnNavDashboard"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:background="#18181B"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="14dp"
+                                    android:paddingVertical="10dp">
+
+                                    <ImageView
+                                        android:id="@+id/ivNavDashboard"
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:contentDescription="Dashboard"
+                                        android:src="@drawable/ic_dashboard"
+                                        app:tint="#FFFFFF" />
+
+                                    <TextView
+                                        android:id="@+id/tvNavDashboard"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:text="Dashboard"
+                                        android:textColor="#FFFFFF"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                                <!-- All Reservations Item -->
+                                <LinearLayout
+                                    android:id="@+id/btnNavAllReservations"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="14dp"
+                                    android:paddingVertical="10dp">
+
+                                    <ImageView
+                                        android:id="@+id/ivNavAllReservations"
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:contentDescription="All Reservations"
+                                        android:src="@drawable/ic_calendar"
+                                        app:tint="#71717A" />
+
+                                    <TextView
+                                        android:id="@+id/tvNavAllReservations"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:text="All Reservations"
+                                        android:textColor="#3F3F46"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                                <!-- Pending Queue Item -->
+                                <LinearLayout
+                                    android:id="@+id/btnNavPendingQueue"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="14dp"
+                                    android:paddingVertical="10dp">
+
+                                    <ImageView
+                                        android:id="@+id/ivNavPendingQueue"
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:contentDescription="Pending Queue"
+                                        android:src="@drawable/ic_clock"
+                                        app:tint="#71717A" />
+
+                                    <TextView
+                                        android:id="@+id/tvNavPendingQueue"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:text="Pending Queue"
+                                        android:textColor="#3F3F46"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                                <!-- Booking History Item -->
+                                <LinearLayout
+                                    android:id="@+id/btnNavBookingHistory"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:background="?attr/selectableItemBackground"
+                                    android:clickable="true"
+                                    android:focusable="true"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="14dp"
+                                    android:paddingVertical="10dp">
+
+                                    <ImageView
+                                        android:id="@+id/ivNavBookingHistory"
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:contentDescription="Booking History"
+                                        android:src="@drawable/ic_history"
+                                        app:tint="#71717A" />
+
+                                    <TextView
+                                        android:id="@+id/tvNavBookingHistory"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:text="Booking History"
+                                        android:textColor="#3F3F46"
+                                        android:textSize="14sp"
+                                        android:textStyle="bold" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                            <!-- Bottom Notice Card inside Portal section -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                app:cardBackgroundColor="#FAFAFA"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeColor="#E4E4E7"
+                                app:strokeWidth="1dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="⚡ 7-Day Horizon"
+                                        android:textColor="#09090B"
+                                        android:textSize="13sp"
+                                        android:textStyle="bold" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:text="Slots are within 7 days. 12h cancellation notice required."
+                                        android:textColor="#71717A"
+                                        android:textSize="12sp" />
+
+                                </LinearLayout>
+
+                            </com.google.android.material.card.MaterialCardView>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Reservation Dashboard Main Title Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvDashboardTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reservation Dashboard"
+                        android:textColor="#09090B"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvWelcomeSubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:lineSpacingExtra="3dp"
+                        android:textColor="#71717A"
+                        android:textSize="13sp"
+                        tools:text="Welcome back, Ravindu. Real-time solar microgrid slot bookings and capacity status." />
+
+                    <!-- Header Action Buttons -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <!-- Book Slot Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnBookEnergySlot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="#18181B"
+                            android:text="+ Book Slot"
+                            android:textColor="#FFFFFF"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            app:cornerRadius="8dp" />
+
+                        <!-- Refresh Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRefresh"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Refresh"
+                            android:textColor="#09090B"
+                            android:textSize="13sp"
+                            app:icon="@drawable/ic_refresh"
+                            app:iconTint="#09090B"
+                            app:strokeColor="#E4E4E7" />
+
+                        <!-- QR Dispatcher Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnQrDispatcher"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="QR Dispatcher"
+                            android:textColor="#09090B"
+                            android:textSize="13sp"
+                            app:icon="@drawable/ic_qr_code"
+                            app:iconTint="#09090B"
+                            app:strokeColor="#E4E4E7" />
+
+                        <!-- Node Map Button -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnViewMap"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:text="Node Map"
+                            android:textColor="#09090B"
+                            android:textSize="13sp"
+                            app:strokeColor="#E4E4E7" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- Summary Cards Section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical">
+
+                    <!-- Card 1: PENDING BOOKINGS -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#E4E4E7"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:letterSpacing="0.05"
+                                    android:text="PENDING BOOKINGS"
+                                    android:textColor="#71717A"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <!-- Orange Circular Icon Badge -->
+                                <FrameLayout
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:background="@drawable/bg_logo"
+                                    android:backgroundTint="#FFEDD5">
+
+                                    <ImageView
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="Pending"
+                                        android:src="@drawable/ic_clock"
+                                        app:tint="#EA580C" />
+
+                                </FrameLayout>
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvPendingBookingsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColor="#09090B"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                tools:text="2" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Awaiting operational approval"
+                                android:textColor="#71717A"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Card 2: APPROVED FUTURE -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#E4E4E7"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:letterSpacing="0.05"
+                                    android:text="APPROVED FUTURE"
+                                    android:textColor="#71717A"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <!-- Blue Circular Icon Badge -->
+                                <FrameLayout
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:background="@drawable/bg_logo"
+                                    android:backgroundTint="#DBEAFE">
+
+                                    <ImageView
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="Approved"
+                                        android:src="@drawable/ic_calendar"
+                                        app:tint="#2563EB" />
+
+                                </FrameLayout>
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvApprovedFutureCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColor="#09090B"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                tools:text="0" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Confirmed slots scheduled ahead"
+                                android:textColor="#71717A"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Card 3: ACTIVE SESSIONS -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="#E4E4E7"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:letterSpacing="0.05"
+                                    android:text="ACTIVE SESSIONS"
+                                    android:textColor="#71717A"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
+
+                                <!-- Green Circular Icon Badge -->
+                                <FrameLayout
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    android:background="@drawable/bg_logo"
+                                    android:backgroundTint="#DCFCE7">
+
+                                    <ImageView
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="Active"
+                                        android:src="@drawable/ic_lightning"
+                                        app:tint="#16A34A" />
+
+                                </FrameLayout>
+
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tvActiveSessionsCount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:textColor="#09090B"
+                                android:textSize="36sp"
+                                android:textStyle="bold"
+                                tools:text="0" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Currently ongoing or open"
+                                android:textColor="#71717A"
+                                android:textSize="12sp" />
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

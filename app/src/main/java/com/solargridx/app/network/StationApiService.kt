@@ -10,7 +10,7 @@ package com.solargridx.app.network
  * Date    : 2026-09-21
  */
 
-import com.solargridx.app.models.Station
+import com.solargridx.app.models.StationResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -22,13 +22,13 @@ interface StationApiService {
     @GET("api/stations")
     suspend fun getStations(
         @Query("includeInactive") includeInactive: Boolean = false,
-    ): Response<List<Station>>
+    ): Response<List<StationResponse>>
 
     /** Retrieves a single station by its business identifier (e.g. "SGX-01"). */
     @GET("api/stations/{stationId}")
     suspend fun getStation(
         @Path("stationId") stationId: String,
-    ): Response<Station>
+    ): Response<StationResponse>
 
     /** Returns active stations near the supplied coordinate pair within radiusKm. */
     @GET("api/stations/nearby")
@@ -36,5 +36,5 @@ interface StationApiService {
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
         @Query("radiusKm") radiusKm: Double,
-    ): Response<List<Station>>
+    ): Response<List<StationResponse>>
 }

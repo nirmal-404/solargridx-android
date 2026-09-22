@@ -29,5 +29,15 @@
             android:name=".ui.MapsActivity"
             android:exported="false"
             android:label="Node Map" />
+        <!-- QR Dispatcher screen -->
+        <activity
+            android:name=".ui.QrDispatcherActivity"
+            android:exported="false"
+            android:label="QR Dispatcher" />
+        <!-- Create Reservation screen -->
+        <activity
+            android:name=".ui.CreateReservationActivity"
+            android:exported="false"
+            android:label="Book Energy Slot" />
     </application>
 </manifest>
