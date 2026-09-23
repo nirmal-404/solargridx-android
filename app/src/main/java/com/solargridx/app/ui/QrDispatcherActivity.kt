@@ -22,6 +22,10 @@ import com.solargridx.app.adapters.QrDispatchAdapter
 import com.solargridx.app.databinding.ActivityQrDispatcherBinding
 import com.solargridx.app.models.QrDispatchPass
 import java.text.SimpleDateFormat
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import java.util.Date
 import java.util.Locale
 
@@ -43,8 +47,20 @@ class QrDispatcherActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityQrDispatcherBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(
+                left = insets.left,
+                top = insets.top,
+                right = insets.right,
+                bottom = insets.bottom
+            )
+            windowInsets
+        }
 
         setupTabs()
         setupQueueRecyclerView()

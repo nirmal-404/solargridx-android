@@ -24,6 +24,11 @@ import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
 
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+
 /**
  * CreateReservationActivity.kt
  * Screen allowing an authenticated Prosumer to select a microgrid station,
@@ -44,8 +49,20 @@ class CreateReservationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityCreateReservationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(
+                left = insets.left,
+                top = insets.top,
+                right = insets.right,
+                bottom = insets.bottom
+            )
+            windowInsets
+        }
 
         sessionManager = SessionManager(this)
         if (!sessionManager.isLoggedIn()) {

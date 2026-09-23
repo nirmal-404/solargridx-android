@@ -15,7 +15,8 @@
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="${MAPS_API_KEY}" />
         <activity
             android:name=".ui.LoginActivity"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -23,7 +24,8 @@
         </activity>
         <activity
             android:name=".ui.MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <!-- Member 2: station node map screen -->
         <activity
             android:name=".ui.MapsActivity"
@@ -33,11 +35,13 @@
         <activity
             android:name=".ui.QrDispatcherActivity"
             android:exported="false"
-            android:label="QR Dispatcher" />
+            android:label="QR Dispatcher"
+            android:windowSoftInputMode="adjustResize" />
         <!-- Create Reservation screen -->
         <activity
             android:name=".ui.CreateReservationActivity"
             android:exported="false"
-            android:label="Book Energy Slot" />
+            android:label="Book Energy Slot"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>
