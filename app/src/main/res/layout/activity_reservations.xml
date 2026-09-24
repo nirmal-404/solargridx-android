@@ -159,20 +159,34 @@
                     android:layout_marginEnd="6dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:text="Approved / Active"
+                    android:text="Approved"
                     android:textColor="#71717A"
                     android:textSize="12sp"
                     app:cornerRadius="18dp"
                     app:strokeColor="#E4E4E7" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/chipHistory"
+                    android:id="@+id/chipCompleted"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="6dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="Completed"
+                    android:textColor="#71717A"
+                    android:textSize="12sp"
+                    app:cornerRadius="18dp"
+                    app:strokeColor="#E4E4E7" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/chipCancelled"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
                     android:layout_height="36dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:text="Booking History"
+                    android:text="Cancelled"
                     android:textColor="#71717A"
                     android:textSize="12sp"
                     app:cornerRadius="18dp"

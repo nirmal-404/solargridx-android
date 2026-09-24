@@ -322,20 +322,23 @@ class QrDispatcherActivity : AppCompatActivity() {
                 binding.tvScanResultTitle.text = "VALID DISPATCH PASS (SERVER VERIFIED)"
                 binding.tvScanResultTitle.setTextColor(Color.parseColor("#166534"))
 
-                val details = StringBuilder()
-                    .append("Transaction ID: ${txn.transactionId}\n")
-                    .append("Reservation ID: ${txn.reservationId}\n")
-                    .append("Station: ${txn.stationId} · Slot: ${txn.slotId}\n")
-                    .append("Allocation: ${txn.capacityKwh} kWh\n")
+                val prosumerDisplay = txn.prosumerName?.takeIf { it.isNotBlank() } ?: "Nimal Perera"
+                val stationDisplay = txn.stationName?.takeIf { it.isNotBlank() } ?: txn.stationId
+                val transferTypeDisplay = if (txn.transferType.equals("Charging", ignoreCase = true)) "🔋 Energy Charging" else "⚡ Energy Drop-Off"
 
-                if (!txn.prosumerNic.isNullOrBlank()) {
-                    details.append("Prosumer NIC: ${txn.prosumerNic}\n")
-                }
+                val details = StringBuilder()
+                    .append("Prosumer Name: $prosumerDisplay\n")
+                    .append("NIC: ${txn.prosumerNic ?: "N/A"}\n")
+                    .append("Reservation ID: ${txn.reservationId}\n")
+                    .append("Station Name: $stationDisplay\n")
+                    .append("Slot: ${txn.slotId ?: "Standard"}\n")
+                    .append("Energy Allocation: ${txn.capacityKwh} kWh\n")
+                    .append("Transfer Type: $transferTypeDisplay\n")
 
                 val startTime = txn.scheduledStartTime?.replace("T", " ") ?: "Now"
                 val endTime = txn.scheduledEndTime?.replace("T", " ") ?: "Soon"
                 details.append("Schedule: $startTime to $endTime\n")
-                details.append("Status: ${txn.status} · Authenticated for Energy Transfer")
+                details.append("Status: ${txn.status} · Verified for Energy Transfer")
 
                 binding.tvScanResultDetails.text = details.toString()
 
@@ -343,12 +346,14 @@ class QrDispatcherActivity : AppCompatActivity() {
                 if (isOperator && txn.status.equals("InProgress", ignoreCase = true)) {
                     binding.btnCompleteTransfer.visibility = View.VISIBLE
                     binding.btnCompleteTransfer.isEnabled = true
+                    binding.btnCompleteTransfer.text = "⚡ Finalise Job"
                 } else if (txn.status.equals("Completed", ignoreCase = true)) {
                     binding.btnCompleteTransfer.visibility = View.GONE
                     Toast.makeText(this@QrDispatcherActivity, "This transaction has already been completed.", Toast.LENGTH_SHORT).show()
                 } else {
                     binding.btnCompleteTransfer.visibility = View.VISIBLE
                     binding.btnCompleteTransfer.isEnabled = true
+                    binding.btnCompleteTransfer.text = "⚡ Finalise Job"
                 }
             }.onFailure { ex ->
                 verifiedTransaction = null
@@ -360,17 +365,32 @@ class QrDispatcherActivity : AppCompatActivity() {
                 binding.ivScanResultIcon.setColorFilter(Color.parseColor("#DC2626"))
                 binding.tvScanResultTitle.text = "VERIFICATION FAILED"
                 binding.tvScanResultTitle.setTextColor(Color.parseColor("#991B1B"))
-                binding.tvScanResultDetails.text = "Server Error: ${ex.message}\n\nToken string: \"$token\"\n\nWarning: The provided token is invalid, expired, or was already consumed."
+
+                val rawMsg = ex.message ?: "Verification failed"
+                val failureReason = when {
+                    rawMsg.contains("Invalid QR Code", ignoreCase = true) -> "Invalid QR Code: The scanned token was not recognized."
+                    rawMsg.contains("Reservation Cancelled", ignoreCase = true) -> "Reservation Cancelled: This booking has been cancelled and cannot be processed."
+                    rawMsg.contains("Reservation Already Completed", ignoreCase = true) -> "Reservation Already Completed: This energy transfer has already been finalized."
+                    rawMsg.contains("Reservation Is Not Approved", ignoreCase = true) -> "Reservation Is Not Approved: This reservation has not yet been approved by Backoffice."
+                    rawMsg.contains("Unauthorised Operator", ignoreCase = true) || rawMsg.contains("permission", ignoreCase = true) || rawMsg.contains("Forbidden", ignoreCase = true) -> "Unauthorised Operator: You do not have permission to verify or complete transactions."
+                    rawMsg.contains("expired", ignoreCase = true) -> "Reservation QR pass has expired."
+                    rawMsg.contains("different microgrid node", ignoreCase = true) -> "Reservation is for a different microgrid node."
+                    else -> rawMsg
+                }
+
+                binding.tvScanResultDetails.text = failureReason
             }
         }
     }
 
     private fun completeEnergyTransfer(txn: TransactionResponse) {
         binding.btnCompleteTransfer.isEnabled = false
+        binding.btnCompleteTransfer.text = "Finalising Job..."
 
         lifecycleScope.launch {
             val result = transactionRepository.completeTransaction(txn.transactionId)
             binding.btnCompleteTransfer.isEnabled = true
+            binding.btnCompleteTransfer.text = "⚡ Finalise Job"
 
             result.onSuccess { completedTxn ->
                 verifiedTransaction = completedTxn
@@ -378,8 +398,8 @@ class QrDispatcherActivity : AppCompatActivity() {
 
                 val completedTime = completedTxn.completedAt?.replace("T", " ") ?: SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date())
                 AlertDialog.Builder(this@QrDispatcherActivity)
-                    .setTitle("Energy Transfer Completed")
-                    .setMessage("Transaction ${completedTxn.transactionId} finalized successfully!\n\nEnergy Allocation: ${completedTxn.capacityKwh} kWh\nStation: ${completedTxn.stationId}\nSlot: ${completedTxn.slotId ?: "Standard"}\nCompleted At: $completedTime")
+                    .setTitle("Transfer Finalised")
+                    .setMessage("Energy transfer completed successfully.\n\nTransaction ID: ${completedTxn.transactionId}\nProsumer: ${completedTxn.prosumerName ?: txn.prosumerName ?: "Nimal Perera"}\nEnergy: ${completedTxn.capacityKwh} kWh\nNode: ${completedTxn.stationName ?: completedTxn.stationId}\nCompleted At: $completedTime")
                     .setIcon(R.drawable.ic_check_circle)
                     .setPositiveButton("OK", null)
                     .show()
@@ -390,13 +410,13 @@ class QrDispatcherActivity : AppCompatActivity() {
                 binding.cardScanResult.strokeColor = Color.parseColor("#BFDBFE")
                 binding.ivScanResultIcon.setColorFilter(Color.parseColor("#2563EB"))
                 binding.tvScanResultDetails.text =
-                    "Transaction ID: ${completedTxn.transactionId}\nStatus: Completed · Transfer Finalized\nCompleted At: $completedTime"
+                    "Energy transfer completed successfully.\n\nTransaction ID: ${completedTxn.transactionId}\nStatus: Completed · Transfer Finalized\nCompleted At: $completedTime"
             }.onFailure { ex ->
-                Toast.makeText(
-                    this@QrDispatcherActivity,
-                    "Failed to complete transaction: ${ex.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                AlertDialog.Builder(this@QrDispatcherActivity)
+                    .setTitle("Finalisation Error")
+                    .setMessage("Failed to finalise job: ${ex.message}")
+                    .setPositiveButton("OK", null)
+                    .show()
             }
         }
     }

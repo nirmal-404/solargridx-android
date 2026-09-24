@@ -228,6 +228,65 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
+                        <!-- Field 5: Transfer Type -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="Energy-Transfer Type *"
+                            android:textColor="#09090B"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <RadioGroup
+                            android:id="@+id/rgTransferType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbDropOff"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:text="⚡ Energy Drop-Off"
+                                android:textColor="#09090B"
+                                android:textSize="13sp" />
+
+                            <RadioButton
+                                android:id="@+id/rbCharging"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="🔋 Energy Charging"
+                                android:textColor="#09090B"
+                                android:textSize="13sp" />
+
+                        </RadioGroup>
+
+                        <!-- Field 6: Additional Notes -->
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/tilNotes"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:hint="Additional Notes (Optional)">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etNotes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="textCapSentences|textMultiLine"
+                                android:maxLines="3"
+                                android:paddingVertical="14dp"
+                                android:textColor="#09090B"
+                                android:textSize="14sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
                         <!-- Slot Capacity / Info Card -->
                         <com.google.android.material.card.MaterialCardView
                             android:id="@+id/cardSlotDetail"
@@ -376,10 +435,12 @@
                                 app:tint="#16A34A" />
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:id="@+id/tvSuccessHeader"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
-                                android:text="RESERVATION CREATED"
+                                android:layout_weight="1"
+                                android:text="Your reservation has been submitted for approval."
                                 android:textColor="#166534"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />

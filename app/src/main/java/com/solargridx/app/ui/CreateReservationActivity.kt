@@ -126,6 +126,22 @@ class CreateReservationActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {}
         })
 
+        binding.rgTransferType.setOnCheckedChangeListener { _, checkedId ->
+            if (checkedId == com.solargridx.app.R.id.rbCharging) {
+                viewModel.setTransferType("Charging")
+            } else {
+                viewModel.setTransferType("DropOff")
+            }
+        }
+
+        binding.etNotes.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.setNotes(s?.toString() ?: "")
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
         binding.btnConfirmReservation.setOnClickListener {
             binding.cardErrorBanner.visibility = View.GONE
             viewModel.submitReservation()
@@ -147,6 +163,8 @@ class CreateReservationActivity : AppCompatActivity() {
             binding.cardForm.visibility = View.VISIBLE
             binding.actvSlot.setText("", false)
             binding.cardSlotDetail.visibility = View.GONE
+            binding.rgTransferType.check(com.solargridx.app.R.id.rbDropOff)
+            binding.etNotes.setText("")
         }
 
         binding.btnReturnDashboard.setOnClickListener { finish() }
@@ -317,7 +335,7 @@ class CreateReservationActivity : AppCompatActivity() {
                             binding.cardErrorBanner.visibility = View.GONE
                             binding.cardSuccessResult.visibility = View.VISIBLE
 
-                            val resId = response.id ?: "RES-2026-${(1000..9999).random()}"
+                            val resId = response.displayId
                             val station = viewModel.selectedStation.value?.name ?: "Solar Microgrid Node"
                             val slot = viewModel.selectedSlot.value
                             val timeStr = if (slot != null) {
@@ -325,11 +343,13 @@ class CreateReservationActivity : AppCompatActivity() {
                             } else "Scheduled Window"
                             val dateStr = apiDateFormat.format(viewModel.selectedDate.value)
                             val capacity = viewModel.requestedCapacityText.value
-                            val status = response.status ?: "Pending Operational Approval"
+                            val transferTypeLabel = if (viewModel.transferType.value == "Charging") "🔋 Energy Charging" else "⚡ Energy Drop-Off"
+                            val status = response.status ?: "Pending Approval"
 
+                            binding.tvSuccessHeader.text = "Your reservation has been submitted for approval."
                             binding.tvSuccessReservationId.text = "Reservation ID: $resId"
                             binding.tvSuccessDetails.text =
-                                "Station: $station\nDate: $dateStr ($timeStr)\nRequested Capacity: $capacity kWh\nStatus: $status"
+                                "Station: $station\nDate & Time: $dateStr ($timeStr)\nRequested Capacity: $capacity kWh\nTransfer Type: $transferTypeLabel\nStatus: $status"
                         }
                     }
                 }

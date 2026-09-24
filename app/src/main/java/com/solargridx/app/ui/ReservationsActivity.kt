@@ -69,6 +69,7 @@ class ReservationsActivity : AppCompatActivity() {
         }
 
         currentFilterTab = intent.getStringExtra(EXTRA_FILTER) ?: "all"
+        if (currentFilterTab == "history") currentFilterTab = "completed"
 
         setupRecyclerView()
         setupListeners()
@@ -97,6 +98,7 @@ class ReservationsActivity : AppCompatActivity() {
             reservations = emptyList(),
             currentUserRole = currentUserRole,
             onCancelClick = { reservation -> confirmCancelReservation(reservation) },
+            onModifyClick = { reservation -> confirmModifyReservation(reservation) },
             onApproveClick = { reservation -> approveReservation(reservation) },
             onViewQrClick = { reservation -> openQrPass(reservation) },
             onItemClick = { reservation -> showReservationDetails(reservation) }
@@ -122,7 +124,8 @@ class ReservationsActivity : AppCompatActivity() {
         binding.chipAll.setOnClickListener { selectFilterTab("all") }
         binding.chipPending.setOnClickListener { selectFilterTab("pending") }
         binding.chipApproved.setOnClickListener { selectFilterTab("approved") }
-        binding.chipHistory.setOnClickListener { selectFilterTab("history") }
+        binding.chipCompleted.setOnClickListener { selectFilterTab("completed") }
+        binding.chipCancelled.setOnClickListener { selectFilterTab("cancelled") }
 
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -139,7 +142,8 @@ class ReservationsActivity : AppCompatActivity() {
         updateChipStyle(binding.chipAll, isSelected = (tab == "all"))
         updateChipStyle(binding.chipPending, isSelected = (tab == "pending"))
         updateChipStyle(binding.chipApproved, isSelected = (tab == "approved"))
-        updateChipStyle(binding.chipHistory, isSelected = (tab == "history"))
+        updateChipStyle(binding.chipCompleted, isSelected = (tab == "completed"))
+        updateChipStyle(binding.chipCancelled, isSelected = (tab == "cancelled"))
         applyFilterAndSearch()
     }
 
@@ -186,11 +190,8 @@ class ReservationsActivity : AppCompatActivity() {
         filtered = when (currentFilterTab) {
             "pending" -> filtered.filter { it.status.equals("Pending", ignoreCase = true) }
             "approved" -> filtered.filter { it.status.equals("Approved", ignoreCase = true) }
-            "history" -> filtered.filter {
-                it.status.equals("Completed", ignoreCase = true) ||
-                it.status.equals("Cancelled", ignoreCase = true) ||
-                it.status.equals("Expired", ignoreCase = true)
-            }
+            "completed" -> filtered.filter { it.status.equals("Completed", ignoreCase = true) }
+            "cancelled" -> filtered.filter { it.status.equals("Cancelled", ignoreCase = true) }
             else -> filtered
         }
 
@@ -202,7 +203,8 @@ class ReservationsActivity : AppCompatActivity() {
                 (item.stationId ?: "").lowercase().contains(q) ||
                 (item.slotId ?: "").lowercase().contains(q) ||
                 (item.status ?: "").lowercase().contains(q) ||
-                (item.prosumerNic ?: "").lowercase().contains(q)
+                (item.prosumerNic ?: "").lowercase().contains(q) ||
+                (item.transferType ?: "").lowercase().contains(q)
             }
         }
 
@@ -220,7 +222,7 @@ class ReservationsActivity : AppCompatActivity() {
     private fun confirmCancelReservation(reservation: ReservationResponse) {
         AlertDialog.Builder(this)
             .setTitle("Cancel Reservation")
-            .setMessage("Are you sure you want to cancel booking ${reservation.displayId}?\n\nNote: Cancellations require at least 12 hours' notice before slot start.")
+            .setMessage("Are you sure you want to cancel booking ${reservation.displayId}?\n\nNotice: Cancellations require at least 12 hours' notice before slot start.")
             .setPositiveButton("Yes, Cancel") { _, _ ->
                 cancelReservation(reservation.displayId)
             }
@@ -235,7 +237,63 @@ class ReservationsActivity : AppCompatActivity() {
                 Toast.makeText(this@ReservationsActivity, "Reservation $id cancelled successfully", Toast.LENGTH_SHORT).show()
                 loadReservations()
             }.onFailure { ex ->
-                Toast.makeText(this@ReservationsActivity, "Cancellation failed: ${ex.message}", Toast.LENGTH_LONG).show()
+                AlertDialog.Builder(this@ReservationsActivity)
+                    .setTitle("Cancellation Failed")
+                    .setMessage(ex.message ?: "Unable to cancel reservation. Notice: Cancellations must be made at least 12 hours before slot start.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+        }
+    }
+
+    private fun confirmModifyReservation(reservation: ReservationResponse) {
+        val input = android.widget.EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setText((reservation.requestedCapacity ?: 10.0).toString())
+            hint = "Requested Capacity (kWh)"
+        }
+
+        val container = android.widget.FrameLayout(this).apply {
+            val padding = (20 * resources.displayMetrics.density).toInt()
+            setPadding(padding, padding / 2, padding, padding / 2)
+            addView(input)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Modify Reservation")
+            .setMessage("Update requested capacity for booking ${reservation.displayId}.\n\nNotice: Modifications require at least 12 hours' notice before scheduled slot start.")
+            .setView(container)
+            .setPositiveButton("Update") { _, _ ->
+                val newCap = input.text.toString().toDoubleOrNull()
+                if (newCap != null && newCap > 0) {
+                    modifyReservation(reservation, newCap)
+                } else {
+                    Toast.makeText(this, "Please enter a valid capacity", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun modifyReservation(reservation: ReservationResponse, newCapacity: Double) {
+        lifecycleScope.launch {
+            val stationId = reservation.stationId ?: ""
+            val slotId = reservation.slotId ?: ""
+            val request = com.solargridx.app.models.UpdateReservationRequest(
+                stationId = stationId,
+                slotId = slotId,
+                requestedCapacity = newCapacity
+            )
+            val result = repository.updateReservation(reservation.displayId, request)
+            result.onSuccess {
+                Toast.makeText(this@ReservationsActivity, "Reservation updated successfully!", Toast.LENGTH_SHORT).show()
+                loadReservations()
+            }.onFailure { ex ->
+                AlertDialog.Builder(this@ReservationsActivity)
+                    .setTitle("Modification Failed")
+                    .setMessage(ex.message ?: "Unable to modify reservation. Notice: Changes must be made at least 12 hours before slot start.")
+                    .setPositiveButton("OK", null)
+                    .show()
             }
         }
     }
@@ -267,11 +325,25 @@ class ReservationsActivity : AppCompatActivity() {
             .append("Station ID: ${reservation.stationId ?: "N/A"}\n")
             .append("Slot ID: ${reservation.slotId ?: "N/A"}\n")
             .append("Capacity: ${reservation.requestedCapacity ?: 0.0} kWh\n")
-            .append("Status: ${reservation.status ?: "Pending"}\n")
-            .append("Schedule: ${reservation.scheduledStartTime?.replace("T", " ") ?: "N/A"} to ${reservation.scheduledEndTime?.replace("T", " ") ?: "N/A"}\n")
+
+        val transferTypeStr = if (reservation.transferType.equals("Charging", ignoreCase = true)) "🔋 Energy Charging" else "⚡ Energy Drop-Off"
+        details.append("Transfer Type: $transferTypeStr\n")
+
+        if (!reservation.notes.isNullOrBlank()) {
+            details.append("Notes: ${reservation.notes}\n")
+        }
+
+        details.append("Status: ${reservation.status ?: "Pending"}\n")
+        details.append("Schedule: ${reservation.scheduledStartTime?.replace("T", " ") ?: "N/A"} to ${reservation.scheduledEndTime?.replace("T", " ") ?: "N/A"}\n")
 
         if (!reservation.prosumerNic.isNullOrBlank()) {
             details.append("Prosumer NIC: ${reservation.prosumerNic}\n")
+        }
+        if (!reservation.approvedByUserId.isNullOrBlank()) {
+            details.append("Approved By: ${reservation.approvedByUserId}\n")
+        }
+        if (!reservation.completedByUserId.isNullOrBlank()) {
+            details.append("Completed By: ${reservation.completedByUserId}\n")
         }
         if (!reservation.transactionId.isNullOrBlank()) {
             details.append("Transaction: ${reservation.transactionId}\n")

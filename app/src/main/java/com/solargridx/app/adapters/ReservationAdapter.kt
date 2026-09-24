@@ -12,6 +12,7 @@ class ReservationAdapter(
     private var reservations: List<ReservationResponse>,
     private val currentUserRole: String,
     private val onCancelClick: (ReservationResponse) -> Unit,
+    private val onModifyClick: (ReservationResponse) -> Unit,
     private val onApproveClick: (ReservationResponse) -> Unit,
     private val onViewQrClick: (ReservationResponse) -> Unit,
     private val onItemClick: (ReservationResponse) -> Unit
@@ -59,6 +60,17 @@ class ReservationAdapter(
             }
         }
 
+        val transferType = item.transferType ?: "DropOff"
+        if (transferType.equals("Charging", ignoreCase = true)) {
+            b.tvTransferTypeBadge.text = "🔋 Charging"
+            b.tvTransferTypeBadge.setBackgroundColor(Color.parseColor("#F3E8FF"))
+            b.tvTransferTypeBadge.setTextColor(Color.parseColor("#6B21A8"))
+        } else {
+            b.tvTransferTypeBadge.text = "⚡ Drop-Off"
+            b.tvTransferTypeBadge.setBackgroundColor(Color.parseColor("#EFF6FF"))
+            b.tvTransferTypeBadge.setTextColor(Color.parseColor("#1D4ED8"))
+        }
+
         b.tvStationInfo.text = "Station: ${item.stationId ?: "N/A"}"
         b.tvSlotInfo.text = "Slot: ${item.slotId ?: "N/A"}"
         b.tvCapacity.text = "${item.requestedCapacity ?: 0.0} kWh"
@@ -72,12 +84,15 @@ class ReservationAdapter(
 
         val isPending = status.equals("Pending", ignoreCase = true)
         val isApproved = status.equals("Approved", ignoreCase = true)
+        val canModifyOrCancel = isPending || isApproved
 
-        b.btnCancelReservation.visibility = if (isPending) View.VISIBLE else View.GONE
+        b.btnCancelReservation.visibility = if (canModifyOrCancel) View.VISIBLE else View.GONE
+        b.btnModifyReservation.visibility = if (canModifyOrCancel) View.VISIBLE else View.GONE
         b.btnApproveReservation.visibility = if (isStaff && isPending) View.VISIBLE else View.GONE
         b.btnViewQrPass.visibility = if (isApproved) View.VISIBLE else View.GONE
 
         b.btnCancelReservation.setOnClickListener { onCancelClick(item) }
+        b.btnModifyReservation.setOnClickListener { onModifyClick(item) }
         b.btnApproveReservation.setOnClickListener { onApproveClick(item) }
         b.btnViewQrPass.setOnClickListener { onViewQrClick(item) }
         b.root.setOnClickListener { onItemClick(item) }

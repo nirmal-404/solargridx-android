@@ -69,6 +69,20 @@ class CreateReservationViewModel(application: Application) : AndroidViewModel(ap
     private val _capacityError = MutableStateFlow<String?>(null)
     val capacityError: StateFlow<String?> = _capacityError.asStateFlow()
 
+    private val _transferType = MutableStateFlow("DropOff")
+    val transferType: StateFlow<String> = _transferType.asStateFlow()
+
+    private val _notesText = MutableStateFlow("")
+    val notesText: StateFlow<String> = _notesText.asStateFlow()
+
+    fun setTransferType(type: String) {
+        _transferType.value = type
+    }
+
+    fun setNotes(notes: String) {
+        _notesText.value = notes
+    }
+
     // Submission State
     private val _isSubmitting = MutableStateFlow(false)
     val isSubmitting: StateFlow<Boolean> = _isSubmitting.asStateFlow()
@@ -270,7 +284,9 @@ class CreateReservationViewModel(application: Application) : AndroidViewModel(ap
             val request = CreateReservationRequest(
                 stationId = stationIdCode,
                 slotId = slotIdCode,
-                requestedCapacity = capacity
+                requestedCapacity = capacity,
+                transferType = _transferType.value,
+                notes = _notesText.value.ifBlank { null }
             )
 
             val result = reservationRepository.createReservation(request)

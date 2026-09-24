@@ -23,7 +23,10 @@ data class TransactionResponse(
     @SerializedName("status") val status: String = "InProgress",
     @SerializedName("expiresAt") val expiresAt: String? = null,
     @SerializedName("completedAt") val completedAt: String? = null,
-    @SerializedName("prosumerNic") val prosumerNic: String? = null
+    @SerializedName("prosumerNic") val prosumerNic: String? = null,
+    @SerializedName("prosumerName") val prosumerName: String? = null,
+    @SerializedName("stationName") val stationName: String? = null,
+    @SerializedName("transferType") val transferType: String? = null
 ) {
     val capacityKwh: Double get() = requestedCapacity
 }

@@ -16,7 +16,13 @@ data class CreateReservationRequest(
     val slotId: String,
 
     @SerializedName("RequestedCapacity", alternate = ["requestedCapacity"])
-    val requestedCapacity: Double
+    val requestedCapacity: Double,
+
+    @SerializedName("TransferType", alternate = ["transferType"])
+    val transferType: String = "DropOff",
+
+    @SerializedName("Notes", alternate = ["notes"])
+    val notes: String? = null
 )
 
 /** Response model returned from reservation endpoints. */
@@ -62,6 +68,18 @@ data class ReservationResponse(
 
     @SerializedName("prosumerNic", alternate = ["ProsumerNic"])
     val prosumerNic: String? = null,
+
+    @SerializedName("transferType", alternate = ["TransferType"])
+    val transferType: String? = null,
+
+    @SerializedName("notes", alternate = ["Notes"])
+    val notes: String? = null,
+
+    @SerializedName("approvedByUserId", alternate = ["ApprovedByUserId"])
+    val approvedByUserId: String? = null,
+
+    @SerializedName("completedByUserId", alternate = ["CompletedByUserId"])
+    val completedByUserId: String? = null,
 
     @SerializedName("createdAt", alternate = ["CreatedAt", "timestamp", "Timestamp"])
     val createdAt: String? = null,
