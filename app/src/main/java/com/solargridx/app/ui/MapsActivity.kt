@@ -27,6 +27,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import androidx.activity.enableEdgeToEdge
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.solargridx.app.R
@@ -44,8 +48,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(
+                left = insets.left,
+                top = insets.top,
+                right = insets.right,
+                bottom = 0
+            )
+            binding.bottomNavigation.updatePadding(bottom = insets.bottom)
+            windowInsets
+        }
+
+        com.solargridx.app.utils.BottomNavigationHelper.setup(
+            this,
+            binding.bottomNavigation,
+            com.solargridx.app.R.id.nav_map
+        )
 
         // Initialise the map fragment and register this activity as the callback.
         val mapFragment = supportFragmentManager
@@ -67,6 +90,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Observe ViewModel state flows on the lifecycle scope so we stop
         // collecting when the Activity moves to the background.
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = com.solargridx.app.R.id.nav_map
     }
 
     /** Called by the Maps SDK when the GoogleMap instance is ready to use. */

@@ -1,0 +1,378 @@
+package com.solargridx.app.ui
+
+import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.button.MaterialButton
+import com.solargridx.app.R
+import com.solargridx.app.adapters.ReservationAdapter
+import com.solargridx.app.databinding.ActivityReservationsBinding
+import com.solargridx.app.models.ReservationResponse
+import com.solargridx.app.repositories.ReservationRepository
+import com.solargridx.app.utils.BottomNavigationHelper
+import com.solargridx.app.utils.SessionManager
+import kotlinx.coroutines.launch
+
+class ReservationsActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityReservationsBinding
+    private lateinit var sessionManager: SessionManager
+    private lateinit var repository: ReservationRepository
+    private lateinit var adapter: ReservationAdapter
+
+    private var allReservationsList = listOf<ReservationResponse>()
+    private var currentFilterTab = "all" // "all", "pending", "approved", "history"
+    private var currentSearchQuery = ""
+    private var isLoading = false
+
+    companion object {
+        const val EXTRA_FILTER = "extra_filter"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        binding = ActivityReservationsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(
+                left = insets.left,
+                top = insets.top,
+                right = insets.right,
+                bottom = 0
+            )
+            binding.bottomNavigation.updatePadding(bottom = insets.bottom)
+            windowInsets
+        }
+
+        sessionManager = SessionManager(this)
+        repository = ReservationRepository(this)
+
+        if (!sessionManager.isLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
+        currentFilterTab = intent.getStringExtra(EXTRA_FILTER) ?: "all"
+        if (currentFilterTab == "history") currentFilterTab = "completed"
+
+        setupRecyclerView()
+        setupListeners()
+        setupBottomNav()
+        updateFilterChipStyles(currentFilterTab)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = R.id.nav_history
+        loadReservations()
+    }
+
+    private fun setupBottomNav() {
+        BottomNavigationHelper.setup(
+            this,
+            binding.bottomNavigation,
+            R.id.nav_history
+        )
+    }
+
+    private fun setupRecyclerView() {
+        val currentUserRole = sessionManager.fetchUser()?.role ?: "Prosumer"
+
+        adapter = ReservationAdapter(
+            reservations = emptyList(),
+            currentUserRole = currentUserRole,
+            onCancelClick = { reservation -> confirmCancelReservation(reservation) },
+            onModifyClick = { reservation -> confirmModifyReservation(reservation) },
+            onApproveClick = { reservation -> approveReservation(reservation) },
+            onViewQrClick = { reservation -> openQrPass(reservation) },
+            onItemClick = { reservation -> showReservationDetails(reservation) }
+        )
+
+        binding.rvReservations.layoutManager = LinearLayoutManager(this)
+        binding.rvReservations.adapter = adapter
+    }
+
+    private fun setupListeners() {
+        binding.btnBack.setOnClickListener {
+            finish()
+        }
+
+        binding.btnNewBooking.setOnClickListener {
+            startActivity(Intent(this, CreateReservationActivity::class.java))
+        }
+
+        binding.btnRefresh.setOnClickListener {
+            loadReservations()
+        }
+
+        binding.chipAll.setOnClickListener { selectFilterTab("all") }
+        binding.chipPending.setOnClickListener { selectFilterTab("pending") }
+        binding.chipApproved.setOnClickListener { selectFilterTab("approved") }
+        binding.chipCompleted.setOnClickListener { selectFilterTab("completed") }
+        binding.chipCancelled.setOnClickListener { selectFilterTab("cancelled") }
+
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                currentSearchQuery = s?.toString()?.trim() ?: ""
+                applyFilterAndSearch()
+            }
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun selectFilterTab(tab: String) {
+        currentFilterTab = tab
+        updateFilterChipStyles(tab)
+        applyFilterAndSearch()
+    }
+
+    private fun updateFilterChipStyles(tab: String) {
+        updateChipStyle(binding.chipAll, isSelected = (tab == "all"))
+        updateChipStyle(binding.chipPending, isSelected = (tab == "pending"))
+        updateChipStyle(binding.chipApproved, isSelected = (tab == "approved"))
+        updateChipStyle(binding.chipCompleted, isSelected = (tab == "completed"))
+        updateChipStyle(binding.chipCancelled, isSelected = (tab == "cancelled"))
+    }
+
+    private fun updateChipStyle(chip: MaterialButton, isSelected: Boolean) {
+        if (isSelected) {
+            chip.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#18181B"))
+            chip.setTextColor(Color.parseColor("#FFFFFF"))
+            chip.strokeWidth = 0
+        } else {
+            chip.backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+            chip.setTextColor(Color.parseColor("#71717A"))
+            chip.strokeColor = ColorStateList.valueOf(Color.parseColor("#E4E4E7"))
+            chip.strokeWidth = 2
+        }
+    }
+
+    private fun loadReservations() {
+        if (isLoading) return
+        isLoading = true
+
+        binding.progressBar.visibility = View.VISIBLE
+        binding.layoutEmptyState.visibility = View.GONE
+        binding.rvReservations.visibility = View.GONE
+        binding.btnRefresh.isEnabled = false
+
+        lifecycleScope.launch {
+            try {
+                val result = repository.getReservations()
+                result.onSuccess { list ->
+                    allReservationsList = list
+                }.onFailure { ex ->
+                    Toast.makeText(
+                        this@ReservationsActivity,
+                        "Failed to fetch bookings: ${ex.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } finally {
+                isLoading = false
+                binding.progressBar.visibility = View.GONE
+                binding.btnRefresh.isEnabled = true
+                applyFilterAndSearch()
+            }
+        }
+    }
+
+    private fun applyFilterAndSearch() {
+        if (isLoading) {
+            binding.layoutEmptyState.visibility = View.GONE
+            binding.rvReservations.visibility = View.GONE
+            binding.progressBar.visibility = View.VISIBLE
+            return
+        }
+
+        var filtered = allReservationsList
+
+        // Apply Tab Filter
+        filtered = when (currentFilterTab) {
+            "pending" -> filtered.filter { it.status.equals("Pending", ignoreCase = true) }
+            "approved" -> filtered.filter { it.status.equals("Approved", ignoreCase = true) }
+            "completed" -> filtered.filter { it.status.equals("Completed", ignoreCase = true) }
+            "cancelled" -> filtered.filter { it.status.equals("Cancelled", ignoreCase = true) }
+            else -> filtered
+        }
+
+        // Apply Search Query
+        if (currentSearchQuery.isNotEmpty()) {
+            val q = currentSearchQuery.lowercase()
+            filtered = filtered.filter { item ->
+                item.displayId.lowercase().contains(q) ||
+                (item.stationId ?: "").lowercase().contains(q) ||
+                (item.slotId ?: "").lowercase().contains(q) ||
+                (item.status ?: "").lowercase().contains(q) ||
+                (item.prosumerNic ?: "").lowercase().contains(q) ||
+                (item.transferType ?: "").lowercase().contains(q)
+            }
+        }
+
+        adapter.updateList(filtered)
+
+        binding.progressBar.visibility = View.GONE
+        if (filtered.isEmpty()) {
+            binding.layoutEmptyState.visibility = View.VISIBLE
+            binding.rvReservations.visibility = View.GONE
+        } else {
+            binding.layoutEmptyState.visibility = View.GONE
+            binding.rvReservations.visibility = View.VISIBLE
+        }
+    }
+
+    private fun confirmCancelReservation(reservation: ReservationResponse) {
+        AlertDialog.Builder(this)
+            .setTitle("Cancel Reservation")
+            .setMessage("Are you sure you want to cancel booking ${reservation.displayId}?\n\nNotice: Cancellations require at least 12 hours' notice before slot start.")
+            .setPositiveButton("Yes, Cancel") { _, _ ->
+                cancelReservation(reservation.displayId)
+            }
+            .setNegativeButton("No", null)
+            .show()
+    }
+
+    private fun cancelReservation(id: String) {
+        lifecycleScope.launch {
+            val result = repository.cancelReservation(id)
+            result.onSuccess {
+                Toast.makeText(this@ReservationsActivity, "Reservation $id cancelled successfully", Toast.LENGTH_SHORT).show()
+                loadReservations()
+            }.onFailure { ex ->
+                AlertDialog.Builder(this@ReservationsActivity)
+                    .setTitle("Cancellation Failed")
+                    .setMessage(ex.message ?: "Unable to cancel reservation. Notice: Cancellations must be made at least 12 hours before slot start.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+        }
+    }
+
+    private fun confirmModifyReservation(reservation: ReservationResponse) {
+        val input = android.widget.EditText(this).apply {
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setText((reservation.requestedCapacity ?: 10.0).toString())
+            hint = "Requested Capacity (kWh)"
+        }
+
+        val container = android.widget.FrameLayout(this).apply {
+            val padding = (20 * resources.displayMetrics.density).toInt()
+            setPadding(padding, padding / 2, padding, padding / 2)
+            addView(input)
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Modify Reservation")
+            .setMessage("Update requested capacity for booking ${reservation.displayId}.\n\nNotice: Modifications require at least 12 hours' notice before scheduled slot start.")
+            .setView(container)
+            .setPositiveButton("Update") { _, _ ->
+                val newCap = input.text.toString().toDoubleOrNull()
+                if (newCap != null && newCap > 0) {
+                    modifyReservation(reservation, newCap)
+                } else {
+                    Toast.makeText(this, "Please enter a valid capacity", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun modifyReservation(reservation: ReservationResponse, newCapacity: Double) {
+        lifecycleScope.launch {
+            val stationId = reservation.stationId ?: ""
+            val slotId = reservation.slotId ?: ""
+            val request = com.solargridx.app.models.UpdateReservationRequest(
+                stationId = stationId,
+                slotId = slotId,
+                requestedCapacity = newCapacity
+            )
+            val result = repository.updateReservation(reservation.displayId, request)
+            result.onSuccess {
+                Toast.makeText(this@ReservationsActivity, "Reservation updated successfully!", Toast.LENGTH_SHORT).show()
+                loadReservations()
+            }.onFailure { ex ->
+                AlertDialog.Builder(this@ReservationsActivity)
+                    .setTitle("Modification Failed")
+                    .setMessage(ex.message ?: "Unable to modify reservation. Notice: Changes must be made at least 12 hours before slot start.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+        }
+    }
+
+    private fun approveReservation(reservation: ReservationResponse) {
+        lifecycleScope.launch {
+            val result = repository.approveReservation(reservation.displayId)
+            result.onSuccess {
+                Toast.makeText(this@ReservationsActivity, "Reservation ${reservation.displayId} approved! QR token issued.", Toast.LENGTH_SHORT).show()
+                loadReservations()
+            }.onFailure { ex ->
+                Toast.makeText(this@ReservationsActivity, "Approval failed: ${ex.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun openQrPass(reservation: ReservationResponse) {
+        val intent = Intent(this, QrDispatcherActivity::class.java).apply {
+            putExtra(QrDispatcherActivity.EXTRA_RESERVATION_ID, reservation.displayId)
+            putExtra(QrDispatcherActivity.EXTRA_STATION_ID, reservation.stationId)
+            putExtra(QrDispatcherActivity.EXTRA_CAPACITY, reservation.requestedCapacity ?: 0.0)
+        }
+        startActivity(intent)
+    }
+
+    private fun showReservationDetails(reservation: ReservationResponse) {
+        val details = StringBuilder()
+            .append("Reservation ID: ${reservation.displayId}\n")
+            .append("Station ID: ${reservation.stationId ?: "N/A"}\n")
+            .append("Slot ID: ${reservation.slotId ?: "N/A"}\n")
+            .append("Capacity: ${reservation.requestedCapacity ?: 0.0} kWh\n")
+
+        val transferTypeStr = if (reservation.transferType.equals("Charging", ignoreCase = true)) "🔋 Energy Charging" else "⚡ Energy Drop-Off"
+        details.append("Transfer Type: $transferTypeStr\n")
+
+        if (!reservation.notes.isNullOrBlank()) {
+            details.append("Notes: ${reservation.notes}\n")
+        }
+
+        details.append("Status: ${reservation.status ?: "Pending"}\n")
+        details.append("Schedule: ${reservation.scheduledStartTime?.replace("T", " ") ?: "N/A"} to ${reservation.scheduledEndTime?.replace("T", " ") ?: "N/A"}\n")
+
+        if (!reservation.prosumerNic.isNullOrBlank()) {
+            details.append("Prosumer NIC: ${reservation.prosumerNic}\n")
+        }
+        if (!reservation.approvedByUserId.isNullOrBlank()) {
+            details.append("Approved By: ${reservation.approvedByUserId}\n")
+        }
+        if (!reservation.completedByUserId.isNullOrBlank()) {
+            details.append("Completed By: ${reservation.completedByUserId}\n")
+        }
+        if (!reservation.transactionId.isNullOrBlank()) {
+            details.append("Transaction: ${reservation.transactionId}\n")
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Booking Details")
+            .setMessage(details.toString())
+            .setPositiveButton("Close", null)
+            .show()
+    }
+}

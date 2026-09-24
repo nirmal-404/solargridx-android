@@ -14,6 +14,9 @@ interface AuthApiService {
     @POST("api/auth/login")
     suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 
+    @POST("api/auth/register")
+    suspend fun register(@Body request: com.solargridx.app.models.RegisterRequest): Response<User>
+
     @GET("api/auth/me")
     suspend fun getCurrentUser(
         @Header("Authorization") token: String
