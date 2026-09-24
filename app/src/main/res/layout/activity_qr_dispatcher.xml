@@ -588,6 +588,8 @@
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
             app:elevation="8dp"
+            app:itemActiveIndicatorStyle="@null"
+            app:itemIconSize="22dp"
             app:itemIconTint="@color/bottom_nav_colors"
             app:itemTextColor="@color/bottom_nav_colors"
             app:labelVisibilityMode="labeled"

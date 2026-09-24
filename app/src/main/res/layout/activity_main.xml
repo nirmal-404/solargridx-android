@@ -23,44 +23,6 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="10dp">
 
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:background="@drawable/bg_logo"
-                android:contentDescription="@string/app_name"
-                android:padding="8dp"
-                android:src="@drawable/ic_sun" />
-
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="8dp"
-                android:contentDescription="Home"
-                android:src="@drawable/ic_home"
-                app:tint="#A1A1AA" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text=">"
-                android:textColor="#A1A1AA"
-                android:textSize="12sp" />
-
-            <!-- Breadcrumb Tag -->
-            <TextView
-                android:id="@+id/tvBreadcrumbTag"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:background="@drawable/bg_logo"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:text="Dashboard"
-                android:textColor="#FFFFFF"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
             <View
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -423,6 +385,8 @@
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
             app:elevation="8dp"
+            app:itemActiveIndicatorStyle="@null"
+            app:itemIconSize="22dp"
             app:itemIconTint="@color/bottom_nav_colors"
             app:itemTextColor="@color/bottom_nav_colors"
             app:labelVisibilityMode="labeled"
