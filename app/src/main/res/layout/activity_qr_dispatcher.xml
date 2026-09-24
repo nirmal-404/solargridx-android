@@ -183,103 +183,75 @@
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
 
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Select an approved reservation to view or generate its QR dispatch pass."
+                                android:textColor="#71717A"
+                                android:textSize="12sp" />
+
                             <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:id="@+id/tilApprovedReservation"
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:hint="Approved Reservation ID *">
+                                android:layout_marginTop="16dp"
+                                android:hint="Select Approved Reservation"
+                                app:boxStrokeColor="#18181B"
+                                app:hintTextColor="#18181B">
 
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/etReservationId"
+                                <AutoCompleteTextView
+                                    android:id="@+id/actvApprovedReservations"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:inputType="textCapCharacters"
-                                    android:text="RSV-8BAB6BCEC6A3" />
+                                    android:inputType="none"
+                                    android:paddingVertical="14dp"
+                                    android:textColor="#09090B"
+                                    android:textSize="14sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
 
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:hint="Station ID / Node">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/etStationName"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="text"
-                                    android:text="SGXST-001" />
-
-                            </com.google.android.material.textfield.TextInputLayout>
-
+                            <!-- Reservation Details Summary Badge -->
                             <LinearLayout
+                                android:id="@+id/layoutReservationSummary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:orientation="horizontal">
+                                android:background="#F4F4F5"
+                                android:orientation="vertical"
+                                android:padding="12dp"
+                                android:visibility="gone">
 
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                    android:layout_width="0dp"
+                                <TextView
+                                    android:id="@+id/tvReservationSummaryTitle"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:hint="Energy (kWh)">
+                                    android:text="Reservation Details"
+                                    android:textColor="#09090B"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold" />
 
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/etEnergyKwh"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:inputType="numberDecimal"
-                                        android:text="25.0" />
-
-                                </com.google.android.material.textfield.TextInputLayout>
-
-                                <com.google.android.material.textfield.TextInputLayout
-                                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                    android:layout_width="0dp"
+                                <TextView
+                                    android:id="@+id/tvReservationSummaryContent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp"
-                                    android:layout_weight="1"
-                                    android:hint="Battery Slot #">
-
-                                    <com.google.android.material.textfield.TextInputEditText
-                                        android:id="@+id/etBatterySlot"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="wrap_content"
-                                        android:inputType="number"
-                                        android:text="2" />
-
-                                </com.google.android.material.textfield.TextInputLayout>
+                                    android:layout_marginTop="4dp"
+                                    android:textColor="#52525B"
+                                    android:textSize="12sp"
+                                    tools:text="Station: SGXST-001 • Energy: 25.0 kWh • Status: Approved" />
 
                             </LinearLayout>
-
-                            <com.google.android.material.textfield.TextInputLayout
-                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:hint="Recipient Email / Vehicle ID">
-
-                                <com.google.android.material.textfield.TextInputEditText
-                                    android:id="@+id/etRecipient"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:inputType="textEmailAddress"
-                                    android:text="prosumer@solargridx.com" />
-
-                            </com.google.android.material.textfield.TextInputLayout>
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnGenerateQr"
                                 android:layout_width="match_parent"
                                 android:layout_height="52dp"
-                                android:layout_marginTop="20dp"
-                                android:text="⚡ Generate QR Dispatch Pass"
+                                android:layout_marginTop="18dp"
+                                android:text="Show QR Code"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp"
+                                android:textStyle="bold"
                                 app:backgroundTint="#18181B"
                                 app:cornerRadius="10dp" />
 

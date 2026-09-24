@@ -35,12 +35,17 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.widget.ArrayAdapter
+import com.solargridx.app.models.ReservationResponse
+import com.solargridx.app.utils.QrPassStorage
 
 class QrDispatcherActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityQrDispatcherBinding
     private lateinit var adapter: QrDispatchAdapter
     private val activePassesList = mutableListOf<QrDispatchPass>()
+    private var approvedReservationsList = mutableListOf<ReservationResponse>()
+    private var selectedReservation: ReservationResponse? = null
 
     private lateinit var sessionManager: SessionManager
     private lateinit var reservationRepository: ReservationRepository
@@ -105,32 +110,30 @@ class QrDispatcherActivity : AppCompatActivity() {
 
     private fun handleIncomingIntent() {
         val passedResId = intent.getStringExtra(EXTRA_RESERVATION_ID)
-        val passedStationId = intent.getStringExtra(EXTRA_STATION_ID)
-        val passedCapacity = intent.getDoubleExtra(EXTRA_CAPACITY, 0.0)
 
-        if (!passedResId.isNullOrBlank()) {
-            binding.etReservationId.setText(passedResId)
-            if (!passedStationId.isNullOrBlank()) {
-                binding.etStationName.setText(passedStationId)
-            }
-            if (passedCapacity > 0.0) {
-                binding.etEnergyKwh.setText(passedCapacity.toString())
-            }
-            switchTab(0)
-            generateDispatchPass()
-            return
-        }
-
-        // Determine default tab based on user role
         val userRole = sessionManager.fetchUser()?.role ?: "Prosumer"
-        if (userRole.equals("GridOperator", ignoreCase = true)) {
-            switchTab(1) // Default to Scan & Verify for Operator
+        val isProsumer = userRole.isBlank() || userRole.equals("Prosumer", ignoreCase = true)
+
+        if (!isProsumer && passedResId.isNullOrBlank()) {
+            switchTab(1) // Default to Scan & Verify for Operator/Staff
         } else {
-            switchTab(0) // Default to Generate for Prosumer
+            switchTab(0) // Default to Generate for Prosumer or when Reservation ID is passed
         }
+
+        loadApprovedReservations(passedResId)
     }
 
     private fun setupTabs() {
+        val user = sessionManager.fetchUser()
+        val isProsumer = user?.role.isNullOrBlank() || user?.role.equals("Prosumer", ignoreCase = true)
+
+        // Don't show Scan & Verify toggle to Prosumers; show only on other accounts (Operators/Backoffice)
+        if (isProsumer) {
+            binding.btnTabScan.visibility = View.GONE
+        } else {
+            binding.btnTabScan.visibility = View.VISIBLE
+        }
+
         binding.btnTabGenerate.setOnClickListener { switchTab(0) }
         binding.btnTabScan.setOnClickListener { switchTab(1) }
         binding.btnTabQueue.setOnClickListener { switchTab(2) }
@@ -144,6 +147,10 @@ class QrDispatcherActivity : AppCompatActivity() {
         updateTabStyle(binding.btnTabGenerate, isSelected = (tabIndex == 0))
         updateTabStyle(binding.btnTabScan, isSelected = (tabIndex == 1))
         updateTabStyle(binding.btnTabQueue, isSelected = (tabIndex == 2))
+
+        if (tabIndex == 2) {
+            refreshActivePasses()
+        }
     }
 
     private fun updateTabStyle(tabView: TextView, isSelected: Boolean) {
@@ -160,12 +167,32 @@ class QrDispatcherActivity : AppCompatActivity() {
 
     private fun setupQueueRecyclerView() {
         adapter = QrDispatchAdapter(activePassesList) { pass ->
-            binding.etManualToken.setText(pass.qrPayload)
-            switchTab(1)
-            verifyPassPayload(pass.qrPayload)
+            val user = sessionManager.fetchUser()
+            val isProsumer = user?.role.isNullOrBlank() || user?.role.equals("Prosumer", ignoreCase = true)
+            if (!isProsumer) {
+                binding.etManualToken.setText(pass.qrPayload)
+                switchTab(1)
+                verifyPassPayload(pass.qrPayload)
+            } else {
+                switchTab(0)
+                displayQrCode(pass.qrPayload, pass.reservationId)
+                val idx = approvedReservationsList.indexOfFirst { it.displayId.equals(pass.reservationId, ignoreCase = true) }
+                if (idx >= 0) {
+                    val displayItems = getApprovedDisplayItems()
+                    selectReservationAtIndex(idx, displayItems)
+                }
+            }
         }
         binding.rvActivePasses.layoutManager = LinearLayoutManager(this)
         binding.rvActivePasses.adapter = adapter
+        refreshActivePasses()
+    }
+
+    private fun refreshActivePasses() {
+        val saved = QrPassStorage.getAllPasses(this)
+        activePassesList.clear()
+        activePassesList.addAll(saved)
+        adapter.updatePasses(activePassesList)
     }
 
     private fun setupListeners() {
@@ -174,7 +201,11 @@ class QrDispatcherActivity : AppCompatActivity() {
         }
 
         binding.btnGenerateQr.setOnClickListener {
-            generateDispatchPass()
+            generateOrShowQrPass()
+        }
+
+        binding.actvApprovedReservations.setOnClickListener {
+            binding.actvApprovedReservations.showDropDown()
         }
 
         binding.btnShareQr.setOnClickListener {
@@ -226,20 +257,129 @@ class QrDispatcherActivity : AppCompatActivity() {
         }
     }
 
-    private fun generateDispatchPass() {
-        val reservationId = binding.etReservationId.text.toString().trim()
-        val station = binding.etStationName.text.toString().trim().ifEmpty { "SGXST-001" }
-        val energyKwh = binding.etEnergyKwh.text.toString().toDoubleOrNull() ?: 25.0
-        val slotNum = binding.etBatterySlot.text.toString().toIntOrNull() ?: 1
-        val recipient = binding.etRecipient.text.toString().trim().ifEmpty {
-            sessionManager.fetchUser()?.email ?: "prosumer@solargridx.local"
-        }
+    private fun loadApprovedReservations(preselectedId: String?) {
+        lifecycleScope.launch {
+            val result = reservationRepository.getReservations(status = "Approved")
+            var approved = result.getOrNull()?.filter {
+                it.status.equals("Approved", ignoreCase = true)
+            } ?: emptyList()
 
-        if (reservationId.isEmpty()) {
-            Toast.makeText(this, "Please enter a valid approved Reservation ID", Toast.LENGTH_SHORT).show()
+            // If empty, try getting all reservations and filtering
+            if (approved.isEmpty()) {
+                val allResult = reservationRepository.getReservations()
+                approved = allResult.getOrNull()?.filter {
+                    it.status.equals("Approved", ignoreCase = true)
+                } ?: emptyList()
+            }
+
+            approvedReservationsList.clear()
+            approvedReservationsList.addAll(approved)
+
+            if (!preselectedId.isNullOrBlank() && approvedReservationsList.none { it.displayId.equals(preselectedId, ignoreCase = true) }) {
+                val passedStationId = intent.getStringExtra(EXTRA_STATION_ID)
+                val passedCapacity = intent.getDoubleExtra(EXTRA_CAPACITY, 0.0)
+                approvedReservationsList.add(
+                    0,
+                    ReservationResponse(
+                        reservationId = preselectedId,
+                        stationId = passedStationId,
+                        requestedCapacity = passedCapacity,
+                        status = "Approved"
+                    )
+                )
+            }
+
+            setupApprovedReservationsDropdown(preselectedId)
+        }
+    }
+
+    private fun getApprovedDisplayItems(): List<String> {
+        return approvedReservationsList.map { res ->
+            val id = res.displayId
+            val station = res.stationId ?: "Station"
+            val cap = res.requestedCapacity?.let { "${it} kWh" } ?: ""
+            if (cap.isNotEmpty()) "$id ($station • $cap)" else "$id ($station)"
+        }
+    }
+
+    private fun setupApprovedReservationsDropdown(preselectedId: String?) {
+        if (approvedReservationsList.isEmpty()) {
+            binding.actvApprovedReservations.setAdapter(null)
+            binding.actvApprovedReservations.setText("No approved reservations found", false)
+            binding.actvApprovedReservations.isEnabled = false
+            binding.layoutReservationSummary.visibility = View.GONE
+            binding.cardGeneratedQrResult.visibility = View.GONE
+            binding.btnGenerateQr.isEnabled = false
             return
         }
 
+        binding.actvApprovedReservations.isEnabled = true
+        binding.btnGenerateQr.isEnabled = true
+
+        val displayItems = getApprovedDisplayItems()
+        val dropdownAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, displayItems)
+        binding.actvApprovedReservations.setAdapter(dropdownAdapter)
+
+        val targetIndex = if (!preselectedId.isNullOrBlank()) {
+            approvedReservationsList.indexOfFirst { it.displayId.equals(preselectedId, ignoreCase = true) }
+                .takeIf { it >= 0 } ?: 0
+        } else {
+            0
+        }
+
+        selectReservationAtIndex(targetIndex, displayItems)
+
+        binding.actvApprovedReservations.setOnItemClickListener { _, _, position, _ ->
+            selectReservationAtIndex(position, displayItems)
+        }
+    }
+
+    private fun selectReservationAtIndex(position: Int, displayItems: List<String>) {
+        if (position in approvedReservationsList.indices) {
+            selectedReservation = approvedReservationsList[position]
+            binding.actvApprovedReservations.setText(displayItems[position], false)
+
+            val res = selectedReservation!!
+            val station = res.stationId ?: "SGXST-001"
+            val cap = res.requestedCapacity ?: 0.0
+            val time = res.scheduledStartTime?.replace("T", " ") ?: "Approved Slot"
+
+            binding.tvReservationSummaryContent.text = "Node: $station • Energy: $cap kWh • Schedule: $time"
+            binding.layoutReservationSummary.visibility = View.VISIBLE
+
+            // Check if QR pass is already saved in persistent storage!
+            val existingPass = QrPassStorage.getPass(this, res.displayId)
+            if (existingPass != null) {
+                // Show saved QR pass directly without regenerating
+                displayQrCode(existingPass.qrPayload, res.displayId)
+            } else {
+                binding.cardGeneratedQrResult.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun generateOrShowQrPass() {
+        val res = selectedReservation
+        if (res == null) {
+            Toast.makeText(this, "Please select an approved reservation", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val reservationId = res.displayId
+        val station = res.stationId ?: "SGXST-001"
+        val energyKwh = res.requestedCapacity ?: 25.0
+        val slotNum = 1
+        val recipient = sessionManager.fetchUser()?.email ?: "prosumer@solargridx.local"
+
+        // If already saved, only show that, do NOT regenerate again and again!
+        val existingPass = QrPassStorage.getPass(this, reservationId)
+        if (existingPass != null) {
+            displayQrCode(existingPass.qrPayload, reservationId)
+            Toast.makeText(this, "Showing saved QR dispatch pass", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // First time generation: issue token from server and save it permanently
         binding.btnGenerateQr.isEnabled = false
         Toast.makeText(this, "Requesting secure transaction token from server...", Toast.LENGTH_SHORT).show()
 
@@ -249,49 +389,52 @@ class QrDispatcherActivity : AppCompatActivity() {
 
             tokenResult.onSuccess { qrTokenResponse ->
                 val serverToken = qrTokenResponse.token
-                val expiresAt = qrTokenResponse.expiresAt ?: "24h"
+                val timestamp = SimpleDateFormat("HH:mm:ss, dd MMM", Locale.getDefault()).format(Date())
+                val newPass = QrDispatchPass(
+                    id = reservationId,
+                    reservationId = reservationId,
+                    stationId = station,
+                    stationName = station,
+                    energyKwh = energyKwh,
+                    batterySlotNumber = slotNum,
+                    userEmail = recipient,
+                    qrPayload = serverToken,
+                    status = "TOKEN_ISSUED",
+                    timestamp = timestamp
+                )
 
-                try {
-                    val multiFormatWriter = MultiFormatWriter()
-                    val bitMatrix = multiFormatWriter.encode(serverToken, BarcodeFormat.QR_CODE, 500, 500)
-                    val barcodeEncoder = BarcodeEncoder()
-                    val bitmap = barcodeEncoder.createBitmap(bitMatrix)
+                // Save to persistent storage so it is never regenerated again
+                QrPassStorage.savePass(this@QrDispatcherActivity, newPass)
 
-                    binding.ivGeneratedQr.setImageBitmap(bitmap)
-                    binding.tvGeneratedPassId.text = "Reservation: $reservationId"
-                    binding.tvQrPayloadPreview.text = serverToken
-                    binding.cardGeneratedQrResult.visibility = View.VISIBLE
+                activePassesList.removeAll { it.reservationId == reservationId }
+                activePassesList.add(0, newPass)
+                adapter.updatePasses(activePassesList)
 
-                    val timestamp = SimpleDateFormat("HH:mm:ss, dd MMM", Locale.getDefault()).format(Date())
-                    val newPass = QrDispatchPass(
-                        id = reservationId,
-                        reservationId = reservationId,
-                        stationId = station,
-                        stationName = station,
-                        energyKwh = energyKwh,
-                        batterySlotNumber = slotNum,
-                        userEmail = recipient,
-                        qrPayload = serverToken,
-                        status = "TOKEN_ISSUED",
-                        timestamp = timestamp
-                    )
-
-                    activePassesList.removeAll { it.reservationId == reservationId }
-                    activePassesList.add(0, newPass)
-                    adapter.updatePasses(activePassesList)
-
-                    Toast.makeText(this@QrDispatcherActivity, "Secure server QR dispatch token generated!", Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    Toast.makeText(this@QrDispatcherActivity, "Error rendering QR: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
-                }
+                displayQrCode(serverToken, reservationId)
+                Toast.makeText(this@QrDispatcherActivity, "Secure server QR dispatch token generated and saved!", Toast.LENGTH_SHORT).show()
             }.onFailure { ex ->
-                // Fallback: If reservation is not approved yet or error, show server message
                 AlertDialog.Builder(this@QrDispatcherActivity)
                     .setTitle("Token Request Failed")
                     .setMessage("Server response: ${ex.message}\n\nNote: QR tokens can only be generated for reservations in Approved status.")
                     .setPositiveButton("OK", null)
                     .show()
             }
+        }
+    }
+
+    private fun displayQrCode(token: String, reservationId: String) {
+        try {
+            val multiFormatWriter = MultiFormatWriter()
+            val bitMatrix = multiFormatWriter.encode(token, BarcodeFormat.QR_CODE, 500, 500)
+            val barcodeEncoder = BarcodeEncoder()
+            val bitmap = barcodeEncoder.createBitmap(bitMatrix)
+
+            binding.ivGeneratedQr.setImageBitmap(bitmap)
+            binding.tvGeneratedPassId.text = "Reservation: $reservationId"
+            binding.tvQrPayloadPreview.text = token
+            binding.cardGeneratedQrResult.visibility = View.VISIBLE
+        } catch (e: Exception) {
+            Toast.makeText(this@QrDispatcherActivity, "Error rendering QR: ${e.localizedMessage}", Toast.LENGTH_LONG).show()
         }
     }
 

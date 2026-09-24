@@ -60,7 +60,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUserInfo() {
         val user = sessionManager.fetchUser()
-        val displayName = user?.fullName?.ifBlank { null }
+        val displayName = user?.displayName?.ifBlank { null }
+            ?: user?.fullName?.ifBlank { null }
             ?: user?.email?.split("@")?.firstOrNull()?.replaceFirstChar { it.uppercase() }
             ?: user?.email
             ?: user?.nic

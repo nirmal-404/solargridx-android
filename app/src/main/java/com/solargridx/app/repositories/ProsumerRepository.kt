@@ -55,6 +55,19 @@ class ProsumerRepository(context: Context) {
         }
     }
 
+    suspend fun cancelDeactivation(nic: String): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.cancelDeactivation(nic)
+            if (response.isSuccessful) {
+                Unit
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val msg = parseErrorMessage(errorRaw) ?: "Failed to cancel deactivation (HTTP ${response.code()})"
+                error(msg)
+            }
+        }
+    }
+
     private fun parseErrorMessage(rawJson: String): String? {
         if (rawJson.isBlank()) return null
         return try {

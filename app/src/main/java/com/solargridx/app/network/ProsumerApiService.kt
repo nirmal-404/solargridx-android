@@ -26,4 +26,9 @@ interface ProsumerApiService {
     suspend fun requestDeactivation(
         @Path("nic") nic: String
     ): Response<Void>
+
+    @POST("api/prosumers/{nic}/cancel-deactivation")
+    suspend fun cancelDeactivation(
+        @Path("nic") nic: String
+    ): Response<Void>
 }

@@ -1,6 +1,8 @@
 package com.solargridx.app.ui
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -77,7 +79,23 @@ class ProfileActivity : AppCompatActivity() {
 
         val role = user.role ?: "Prosumer"
         val status = user.accountStatus ?: "Active"
-        binding.tvRoleBadge.text = "$role · $status"
+        val isDeactivationPending = status.equals("DeactivationRequested", ignoreCase = true)
+
+        if (isDeactivationPending) {
+            binding.tvRoleBadge.text = "$role · Deactivation Pending"
+            binding.tvDeactivationDescription.text =
+                "A deactivation request is currently pending administrative review by SolarGridX backoffice and operators. Your account remains active while pending. You may cancel this request below."
+            binding.btnRequestDeactivation.text = "Cancel Deactivation Request"
+            binding.btnRequestDeactivation.setTextColor(Color.parseColor("#4B5563"))
+            binding.btnRequestDeactivation.strokeColor = ColorStateList.valueOf(Color.parseColor("#9CA3AF"))
+        } else {
+            binding.tvRoleBadge.text = "$role · $status"
+            binding.tvDeactivationDescription.text =
+                "Submit an official deactivation request to SolarGridX backoffice administration. While deactivation is pending, active slot allocations may be concluded."
+            binding.btnRequestDeactivation.text = "Request Account Deactivation"
+            binding.btnRequestDeactivation.setTextColor(Color.parseColor("#DC2626"))
+            binding.btnRequestDeactivation.strokeColor = ColorStateList.valueOf(Color.parseColor("#DC2626"))
+        }
 
         if (!user.firstName.isNullOrBlank()) {
             binding.etFirstName.setText(user.firstName)
@@ -108,7 +126,12 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.btnRequestDeactivation.setOnClickListener {
-            confirmDeactivationRequest()
+            val user = sessionManager.fetchUser()
+            if (user?.accountStatus.equals("DeactivationRequested", ignoreCase = true)) {
+                confirmCancelDeactivation()
+            } else {
+                confirmDeactivationRequest()
+            }
         }
     }
 
@@ -124,6 +147,9 @@ class ProfileActivity : AppCompatActivity() {
                 val updated = serverUser.copy(token = sessionManager.fetchAuthToken())
                 sessionManager.updateUser(updated)
                 populateFields(updated)
+            }.onFailure {
+                val localUser = sessionManager.fetchUser()
+                populateFields(localUser)
             }
         }
     }
@@ -180,7 +206,7 @@ class ProfileActivity : AppCompatActivity() {
 
         AlertDialog.Builder(this)
             .setTitle("Confirm Deactivation Request")
-            .setMessage("Are you sure you want to request deactivation for your prosumer account ($nic)? SolarGridX backoffice staff will review and process this request.")
+            .setMessage("Are you sure you want to request deactivation for your prosumer account ($nic)? SolarGridX backoffice and operators will review this request. Your account remains active while pending.")
             .setIcon(R.drawable.ic_clock)
             .setPositiveButton("Submit Request") { _, _ ->
                 submitDeactivation(nic)
@@ -197,13 +223,63 @@ class ProfileActivity : AppCompatActivity() {
             binding.btnRequestDeactivation.isEnabled = true
 
             result.onSuccess {
+                val currentUser = sessionManager.fetchUser()
+                val updated = currentUser?.copy(accountStatus = "DeactivationRequested")
+                if (updated != null) {
+                    sessionManager.updateUser(updated)
+                    populateFields(updated)
+                }
                 AlertDialog.Builder(this@ProfileActivity)
                     .setTitle("Request Submitted")
-                    .setMessage("Your deactivation request for NIC $nic has been recorded and submitted to SolarGridX backoffice.")
+                    .setMessage("Your deactivation request for NIC $nic has been recorded and submitted to SolarGridX backoffice and operators. You may continue to conclude active slot allocations while it is reviewed.")
                     .setPositiveButton("OK", null)
                     .show()
             }.onFailure { ex ->
                 Toast.makeText(this@ProfileActivity, "Deactivation request failed: ${ex.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun confirmCancelDeactivation() {
+        val user = sessionManager.fetchUser()
+        val nic = user?.nic
+        if (nic.isNullOrBlank()) {
+            Toast.makeText(this, "NIC identifier not found", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        AlertDialog.Builder(this)
+            .setTitle("Cancel Deactivation Request")
+            .setMessage("Do you want to withdraw your deactivation request and keep your prosumer account ($nic) active?")
+            .setIcon(R.drawable.ic_clock)
+            .setPositiveButton("Keep Account Active") { _, _ ->
+                submitCancelDeactivation(nic)
+            }
+            .setNegativeButton("Dismiss", null)
+            .show()
+    }
+
+    private fun submitCancelDeactivation(nic: String) {
+        binding.btnRequestDeactivation.isEnabled = false
+
+        lifecycleScope.launch {
+            val result = prosumerRepository.cancelDeactivation(nic)
+            binding.btnRequestDeactivation.isEnabled = true
+
+            result.onSuccess {
+                val currentUser = sessionManager.fetchUser()
+                val updated = currentUser?.copy(accountStatus = "Active")
+                if (updated != null) {
+                    sessionManager.updateUser(updated)
+                    populateFields(updated)
+                }
+                AlertDialog.Builder(this@ProfileActivity)
+                    .setTitle("Request Withdrawn")
+                    .setMessage("Your deactivation request for NIC $nic has been cancelled. Your account remains active.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }.onFailure { ex ->
+                Toast.makeText(this@ProfileActivity, "Failed to cancel deactivation: ${ex.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
