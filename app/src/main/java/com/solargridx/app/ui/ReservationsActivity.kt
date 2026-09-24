@@ -36,6 +36,7 @@ class ReservationsActivity : AppCompatActivity() {
     private var allReservationsList = listOf<ReservationResponse>()
     private var currentFilterTab = "all" // "all", "pending", "approved", "history"
     private var currentSearchQuery = ""
+    private var isLoading = false
 
     companion object {
         const val EXTRA_FILTER = "extra_filter"
@@ -74,7 +75,7 @@ class ReservationsActivity : AppCompatActivity() {
         setupRecyclerView()
         setupListeners()
         setupBottomNav()
-        selectFilterTab(currentFilterTab)
+        updateFilterChipStyles(currentFilterTab)
     }
 
     override fun onResume() {
@@ -139,12 +140,16 @@ class ReservationsActivity : AppCompatActivity() {
 
     private fun selectFilterTab(tab: String) {
         currentFilterTab = tab
+        updateFilterChipStyles(tab)
+        applyFilterAndSearch()
+    }
+
+    private fun updateFilterChipStyles(tab: String) {
         updateChipStyle(binding.chipAll, isSelected = (tab == "all"))
         updateChipStyle(binding.chipPending, isSelected = (tab == "pending"))
         updateChipStyle(binding.chipApproved, isSelected = (tab == "approved"))
         updateChipStyle(binding.chipCompleted, isSelected = (tab == "completed"))
         updateChipStyle(binding.chipCancelled, isSelected = (tab == "cancelled"))
-        applyFilterAndSearch()
     }
 
     private fun updateChipStyle(chip: MaterialButton, isSelected: Boolean) {
@@ -161,29 +166,43 @@ class ReservationsActivity : AppCompatActivity() {
     }
 
     private fun loadReservations() {
+        if (isLoading) return
+        isLoading = true
+
         binding.progressBar.visibility = View.VISIBLE
+        binding.layoutEmptyState.visibility = View.GONE
+        binding.rvReservations.visibility = View.GONE
         binding.btnRefresh.isEnabled = false
 
         lifecycleScope.launch {
-            val result = repository.getReservations()
-            binding.progressBar.visibility = View.GONE
-            binding.btnRefresh.isEnabled = true
-
-            result.onSuccess { list ->
-                allReservationsList = list
-                applyFilterAndSearch()
-            }.onFailure { ex ->
-                Toast.makeText(
-                    this@ReservationsActivity,
-                    "Failed to fetch bookings: ${ex.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+            try {
+                val result = repository.getReservations()
+                result.onSuccess { list ->
+                    allReservationsList = list
+                }.onFailure { ex ->
+                    Toast.makeText(
+                        this@ReservationsActivity,
+                        "Failed to fetch bookings: ${ex.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } finally {
+                isLoading = false
+                binding.progressBar.visibility = View.GONE
+                binding.btnRefresh.isEnabled = true
                 applyFilterAndSearch()
             }
         }
     }
 
     private fun applyFilterAndSearch() {
+        if (isLoading) {
+            binding.layoutEmptyState.visibility = View.GONE
+            binding.rvReservations.visibility = View.GONE
+            binding.progressBar.visibility = View.VISIBLE
+            return
+        }
+
         var filtered = allReservationsList
 
         // Apply Tab Filter
@@ -210,6 +229,7 @@ class ReservationsActivity : AppCompatActivity() {
 
         adapter.updateList(filtered)
 
+        binding.progressBar.visibility = View.GONE
         if (filtered.isEmpty()) {
             binding.layoutEmptyState.visibility = View.VISIBLE
             binding.rvReservations.visibility = View.GONE
