@@ -59,8 +59,9 @@ class CreateReservationActivity : AppCompatActivity() {
                 left = insets.left,
                 top = insets.top,
                 right = insets.right,
-                bottom = insets.bottom
+                bottom = 0
             )
+            binding.bottomNavigation.updatePadding(bottom = insets.bottom)
             windowInsets
         }
 
@@ -71,9 +72,20 @@ class CreateReservationActivity : AppCompatActivity() {
             return
         }
 
+        com.solargridx.app.utils.BottomNavigationHelper.setup(
+            this,
+            binding.bottomNavigation,
+            com.solargridx.app.R.id.nav_book_slot
+        )
+
         setupDateAndFormDefaults()
         setupListeners()
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = com.solargridx.app.R.id.nav_book_slot
     }
 
     private fun setupDateAndFormDefaults() {
@@ -181,8 +193,9 @@ class CreateReservationActivity : AppCompatActivity() {
             "Slot ID: ${slot.id}"
         }
 
-        val capacityText = if (slot.capacityKwh != null && slot.capacityKwh > 0) {
-            "Capacity: ${slot.capacityKwh} kWh available"
+        val slotCap = slot.capacityKwh
+        val capacityText = if (slotCap != null && slotCap > 0) {
+            "Capacity: $slotCap kWh available"
         } else {
             "Status: Available"
         }

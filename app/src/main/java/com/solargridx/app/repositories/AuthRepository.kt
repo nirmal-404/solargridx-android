@@ -27,6 +27,21 @@ class AuthRepository {
         }
     }
 
+    suspend fun register(request: com.solargridx.app.models.RegisterRequest): Result<User> = withContext(Dispatchers.IO) {
+        try {
+            val response = apiService.register(request)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val parsedMessage = parseErrorMessage(errorRaw) ?: "Registration failed (HTTP ${response.code()})"
+                Result.failure(Exception(parsedMessage))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Connection error: ${e.localizedMessage ?: "Unable to reach server at http://10.0.2.2:5205"}"))
+        }
+    }
+
     suspend fun getCurrentUser(token: String): Result<User> = withContext(Dispatchers.IO) {
         try {
             val authToken = if (token.startsWith("Bearer ")) token else "Bearer $token"

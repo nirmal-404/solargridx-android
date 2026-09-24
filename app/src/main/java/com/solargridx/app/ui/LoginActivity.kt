@@ -71,7 +71,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnQuickProsumer.setOnClickListener {
-            fillCredentials("kamal.silva@prosumer.local", "Prosumer@1234")
+            fillCredentials("prosumer@solargridx.local", "Prosumer@1234")
+        }
+
+        binding.btnRegister.setOnClickListener {
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 
@@ -146,6 +150,7 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         binding.btnLogin.isEnabled = !isLoading
+        binding.btnRegister.isEnabled = !isLoading
         binding.etEmail.isEnabled = !isLoading
         binding.etPassword.isEnabled = !isLoading
         binding.btnQuickBackoffice.isEnabled = !isLoading

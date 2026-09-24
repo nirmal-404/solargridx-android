@@ -58,10 +58,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 left = insets.left,
                 top = insets.top,
                 right = insets.right,
-                bottom = insets.bottom
+                bottom = 0
             )
+            binding.bottomNavigation.updatePadding(bottom = insets.bottom)
             windowInsets
         }
+
+        com.solargridx.app.utils.BottomNavigationHelper.setup(
+            this,
+            binding.bottomNavigation,
+            com.solargridx.app.R.id.nav_map
+        )
 
         // Initialise the map fragment and register this activity as the callback.
         val mapFragment = supportFragmentManager
@@ -83,6 +90,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Observe ViewModel state flows on the lifecycle scope so we stop
         // collecting when the Activity moves to the background.
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = com.solargridx.app.R.id.nav_map
     }
 
     /** Called by the Maps SDK when the GoogleMap instance is ready to use. */

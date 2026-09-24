@@ -47,18 +47,16 @@
                 android:textColor="#A1A1AA"
                 android:textSize="12sp" />
 
-            <!-- Foldable Breadcrumb Tag -->
+            <!-- Breadcrumb Tag -->
             <TextView
                 android:id="@+id/tvBreadcrumbTag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
                 android:background="@drawable/bg_logo"
-                android:clickable="true"
-                android:focusable="true"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
-                android:text="Dashboard ▾"
+                android:text="Dashboard"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -67,6 +65,18 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
+
+            <!-- Profile Icon Button -->
+            <ImageButton
+                android:id="@+id/btnProfile"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Profile"
+                android:padding="6dp"
+                android:src="@drawable/ic_profile"
+                app:tint="#18181B" />
 
             <!-- Role Badge -->
             <TextView
@@ -111,8 +121,10 @@
 
         <!-- Main Dashboard Scroll Area -->
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:fillViewport="true">
 
             <LinearLayout
@@ -121,256 +133,11 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- MICROGRID PORTAL Foldable Section -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardPortalNavigation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardBackgroundColor="#FFFFFF"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#E4E4E7"
-                    app:strokeWidth="1dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="12dp">
-
-                        <!-- Portal Header Row (Foldable Toggle) -->
-                        <LinearLayout
-                            android:id="@+id/btnPortalHeader"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="?attr/selectableItemBackground"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:paddingHorizontal="4dp"
-                            android:paddingVertical="6dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:letterSpacing="0.05"
-                                android:text="MICROGRID PORTAL"
-                                android:textColor="#71717A"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-
-                            <ImageView
-                                android:id="@+id/ivPortalChevron"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:contentDescription="Toggle Navigation"
-                                android:src="@drawable/ic_chevron_left"
-                                app:tint="#71717A" />
-
-                        </LinearLayout>
-
-                        <!-- Collapsible Content Layout -->
-                        <LinearLayout
-                            android:id="@+id/layoutPortalContent"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="visible">
-
-                            <!-- Menu Navigation Links -->
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:orientation="vertical">
-
-                                <!-- Dashboard Item -->
-                                <LinearLayout
-                                    android:id="@+id/btnNavDashboard"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:background="#18181B"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal"
-                                    android:paddingHorizontal="14dp"
-                                    android:paddingVertical="10dp">
-
-                                    <ImageView
-                                        android:id="@+id/ivNavDashboard"
-                                        android:layout_width="18dp"
-                                        android:layout_height="18dp"
-                                        android:contentDescription="Dashboard"
-                                        android:src="@drawable/ic_dashboard"
-                                        app:tint="#FFFFFF" />
-
-                                    <TextView
-                                        android:id="@+id/tvNavDashboard"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
-                                        android:text="Dashboard"
-                                        android:textColor="#FFFFFF"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                </LinearLayout>
-
-                                <!-- All Reservations Item -->
-                                <LinearLayout
-                                    android:id="@+id/btnNavAllReservations"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:background="?attr/selectableItemBackground"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal"
-                                    android:paddingHorizontal="14dp"
-                                    android:paddingVertical="10dp">
-
-                                    <ImageView
-                                        android:id="@+id/ivNavAllReservations"
-                                        android:layout_width="18dp"
-                                        android:layout_height="18dp"
-                                        android:contentDescription="All Reservations"
-                                        android:src="@drawable/ic_calendar"
-                                        app:tint="#71717A" />
-
-                                    <TextView
-                                        android:id="@+id/tvNavAllReservations"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
-                                        android:text="All Reservations"
-                                        android:textColor="#3F3F46"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                </LinearLayout>
-
-                                <!-- Pending Queue Item -->
-                                <LinearLayout
-                                    android:id="@+id/btnNavPendingQueue"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:background="?attr/selectableItemBackground"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal"
-                                    android:paddingHorizontal="14dp"
-                                    android:paddingVertical="10dp">
-
-                                    <ImageView
-                                        android:id="@+id/ivNavPendingQueue"
-                                        android:layout_width="18dp"
-                                        android:layout_height="18dp"
-                                        android:contentDescription="Pending Queue"
-                                        android:src="@drawable/ic_clock"
-                                        app:tint="#71717A" />
-
-                                    <TextView
-                                        android:id="@+id/tvNavPendingQueue"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
-                                        android:text="Pending Queue"
-                                        android:textColor="#3F3F46"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                </LinearLayout>
-
-                                <!-- Booking History Item -->
-                                <LinearLayout
-                                    android:id="@+id/btnNavBookingHistory"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:background="?attr/selectableItemBackground"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal"
-                                    android:paddingHorizontal="14dp"
-                                    android:paddingVertical="10dp">
-
-                                    <ImageView
-                                        android:id="@+id/ivNavBookingHistory"
-                                        android:layout_width="18dp"
-                                        android:layout_height="18dp"
-                                        android:contentDescription="Booking History"
-                                        android:src="@drawable/ic_history"
-                                        app:tint="#71717A" />
-
-                                    <TextView
-                                        android:id="@+id/tvNavBookingHistory"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
-                                        android:text="Booking History"
-                                        android:textColor="#3F3F46"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold" />
-
-                                </LinearLayout>
-
-                            </LinearLayout>
-
-                            <!-- Bottom Notice Card inside Portal section -->
-                            <com.google.android.material.card.MaterialCardView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                app:cardBackgroundColor="#FAFAFA"
-                                app:cardCornerRadius="10dp"
-                                app:cardElevation="0dp"
-                                app:strokeColor="#E4E4E7"
-                                app:strokeWidth="1dp">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical"
-                                    android:padding="12dp">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="⚡ 7-Day Horizon"
-                                        android:textColor="#09090B"
-                                        android:textSize="13sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="4dp"
-                                        android:text="Slots are within 7 days. 12h cancellation notice required."
-                                        android:textColor="#71717A"
-                                        android:textSize="12sp" />
-
-                                </LinearLayout>
-
-                            </com.google.android.material.card.MaterialCardView>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
                 <!-- Reservation Dashboard Main Title Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="4dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -392,67 +159,7 @@
                         android:textSize="13sp"
                         tools:text="Welcome back, Ravindu. Real-time solar microgrid slot bookings and capacity status." />
 
-                    <!-- Header Action Buttons -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
 
-                        <!-- Book Slot Button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnBookEnergySlot"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="#18181B"
-                            android:text="+ Book Slot"
-                            android:textColor="#FFFFFF"
-                            android:textSize="13sp"
-                            android:textStyle="bold"
-                            app:cornerRadius="8dp" />
-
-                        <!-- Refresh Button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnRefresh"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="Refresh"
-                            android:textColor="#09090B"
-                            android:textSize="13sp"
-                            app:icon="@drawable/ic_refresh"
-                            app:iconTint="#09090B"
-                            app:strokeColor="#E4E4E7" />
-
-                        <!-- QR Dispatcher Button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnQrDispatcher"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="QR Dispatcher"
-                            android:textColor="#09090B"
-                            android:textSize="13sp"
-                            app:icon="@drawable/ic_qr_code"
-                            app:iconTint="#09090B"
-                            app:strokeColor="#E4E4E7" />
-
-                        <!-- Node Map Button -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnViewMap"
-                            style="@style/Widget.Material3.Button.OutlinedButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="Node Map"
-                            android:textColor="#09090B"
-                            android:textSize="13sp"
-                            app:strokeColor="#E4E4E7" />
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -465,9 +172,13 @@
 
                     <!-- Card 1: PENDING BOOKINGS -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardPendingBookings"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardBackgroundColor="#FFFFFF"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="0dp"
@@ -539,9 +250,13 @@
 
                     <!-- Card 2: APPROVED FUTURE -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardApprovedFuture"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardBackgroundColor="#FFFFFF"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="0dp"
@@ -613,9 +328,13 @@
 
                     <!-- Card 3: ACTIVE SESSIONS -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardActiveSessions"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="12dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?attr/selectableItemBackground"
                         app:cardBackgroundColor="#FFFFFF"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="0dp"
@@ -690,6 +409,24 @@
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <!-- Bottom Navigation Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E4E4E7" />
+
+        <!-- Bottom Navigation Bar -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            app:elevation="8dp"
+            app:itemIconTint="@color/bottom_nav_colors"
+            app:itemTextColor="@color/bottom_nav_colors"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/menu_bottom_navigation" />
 
     </LinearLayout>
 

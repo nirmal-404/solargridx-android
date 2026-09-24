@@ -6,26 +6,57 @@ import com.solargridx.app.models.User
 
 class SessionManager(context: Context) {
 
-    private val dbHelper = AppDatabaseHelper(context)
+    private val dbHelper = AppDatabaseHelper.getInstance(context)
+
+    companion object {
+        @Volatile
+        private var cachedUser: User? = null
+        @Volatile
+        private var cachedToken: String? = null
+    }
 
     fun saveUserSession(user: User, token: String) {
+        cachedUser = user
+        cachedToken = token
         dbHelper.saveUserSession(user, token)
     }
 
     fun fetchAuthToken(): String? {
-        return dbHelper.getUserSession()?.token
+        if (!cachedToken.isNullOrEmpty()) {
+            return cachedToken
+        }
+        val user = dbHelper.getUserSession()
+        cachedUser = user
+        cachedToken = user?.token
+        return cachedToken
     }
 
     fun fetchUserEmail(): String? {
-        val user = dbHelper.getUserSession()
+        val user = fetchUser()
         return user?.fullName ?: user?.email ?: user?.nic
     }
 
     fun fetchUser(): User? {
-        return dbHelper.getUserSession()
+        if (cachedUser != null) {
+            return cachedUser
+        }
+        val user = dbHelper.getUserSession()
+        cachedUser = user
+        if (cachedToken.isNullOrEmpty()) {
+            cachedToken = user?.token
+        }
+        return cachedUser
+    }
+
+    fun updateUser(user: User) {
+        val currentToken = fetchAuthToken() ?: ""
+        cachedUser = user
+        dbHelper.saveUserSession(user, currentToken)
     }
 
     fun clearSession() {
+        cachedUser = null
+        cachedToken = null
         dbHelper.clearUserSession()
     }
 
@@ -33,3 +64,4 @@ class SessionManager(context: Context) {
         return !fetchAuthToken().isNullOrEmpty()
     }
 }
+

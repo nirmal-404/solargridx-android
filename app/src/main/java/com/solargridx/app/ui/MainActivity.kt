@@ -28,8 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sessionManager: SessionManager
     private val viewModel: DashboardViewModel by viewModels()
 
-    private var isNavigationExpanded = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,8 +40,9 @@ class MainActivity : AppCompatActivity() {
                 left = insets.left,
                 top = insets.top,
                 right = insets.right,
-                bottom = insets.bottom
+                bottom = 0
             )
+            binding.bottomNavigation.updatePadding(bottom = insets.bottom)
             windowInsets
         }
 
@@ -75,120 +74,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
-        // Toggle fold/unfold navigation when clicking header row or breadcrumb tag
-        binding.btnPortalHeader.setOnClickListener {
-            toggleNavigationFold()
-        }
-
-        binding.tvBreadcrumbTag.setOnClickListener {
-            toggleNavigationFold()
-        }
-
-        binding.btnBookEnergySlot.setOnClickListener {
-            startActivity(Intent(this, CreateReservationActivity::class.java))
-        }
-
-        binding.btnRefresh.setOnClickListener {
-            viewModel.loadSummary()
-        }
-
-        binding.btnQrDispatcher.setOnClickListener {
-            startActivity(Intent(this, QrDispatcherActivity::class.java))
-        }
-
-        binding.btnViewMap.setOnClickListener {
-            startActivity(Intent(this, MapsActivity::class.java))
-        }
+        setupBottomNavigation()
 
         binding.btnLogout.setOnClickListener {
             sessionManager.clearSession()
             navigateToLogin()
         }
 
-        // Navigation Menu Item Clicks
-        binding.btnNavDashboard.setOnClickListener {
-            selectMenuItem("Dashboard")
-            viewModel.loadSummary()
+        binding.btnProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
-        binding.btnNavAllReservations.setOnClickListener {
-            selectMenuItem("All Reservations")
-            startActivity(Intent(this, CreateReservationActivity::class.java))
+        binding.tvRoleBadge.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
-        binding.btnNavPendingQueue.setOnClickListener {
-            selectMenuItem("Pending Queue")
-            Toast.makeText(this, "Pending Queue selected", Toast.LENGTH_SHORT).show()
+        binding.cardPendingBookings.setOnClickListener {
+            val intent = Intent(this, ReservationsActivity::class.java).apply {
+                putExtra(ReservationsActivity.EXTRA_FILTER, "pending")
+            }
+            startActivity(intent)
         }
 
-        binding.btnNavBookingHistory.setOnClickListener {
-            selectMenuItem("Booking History")
-            Toast.makeText(this, "Booking History selected", Toast.LENGTH_SHORT).show()
+        binding.cardApprovedFuture.setOnClickListener {
+            val intent = Intent(this, ReservationsActivity::class.java).apply {
+                putExtra(ReservationsActivity.EXTRA_FILTER, "approved")
+            }
+            startActivity(intent)
         }
-    }
 
-    private fun toggleNavigationFold() {
-        isNavigationExpanded = !isNavigationExpanded
-        if (isNavigationExpanded) {
-            binding.layoutPortalContent.visibility = View.VISIBLE
-            binding.ivPortalChevron.animate().rotation(0f).setDuration(200).start()
-            val currentTitle = binding.tvBreadcrumbTag.text.toString().replace(" ▾", "").replace(" ▸", "")
-            binding.tvBreadcrumbTag.text = "$currentTitle ▾"
-        } else {
-            binding.layoutPortalContent.visibility = View.GONE
-            binding.ivPortalChevron.animate().rotation(-90f).setDuration(200).start()
-            val currentTitle = binding.tvBreadcrumbTag.text.toString().replace(" ▾", "").replace(" ▸", "")
-            binding.tvBreadcrumbTag.text = "$currentTitle ▸"
-        }
-    }
-
-    private fun selectMenuItem(title: String) {
-        val arrow = if (isNavigationExpanded) " ▾" else " ▸"
-        binding.tvBreadcrumbTag.text = "$title$arrow"
-
-        // Update active highlight styling on menu items
-        updateMenuItemStyle(
-            binding.btnNavDashboard,
-            binding.tvNavDashboard,
-            binding.ivNavDashboard,
-            isSelect = (title == "Dashboard")
-        )
-        updateMenuItemStyle(
-            binding.btnNavAllReservations,
-            binding.tvNavAllReservations,
-            binding.ivNavAllReservations,
-            isSelect = (title == "All Reservations")
-        )
-        updateMenuItemStyle(
-            binding.btnNavPendingQueue,
-            binding.tvNavPendingQueue,
-            binding.ivNavPendingQueue,
-            isSelect = (title == "Pending Queue")
-        )
-        updateMenuItemStyle(
-            binding.btnNavBookingHistory,
-            binding.tvNavBookingHistory,
-            binding.ivNavBookingHistory,
-            isSelect = (title == "Booking History")
-        )
-    }
-
-    private fun updateMenuItemStyle(
-        container: View,
-        textView: TextView,
-        imageView: ImageView,
-        isSelect: Boolean
-    ) {
-        if (isSelect) {
-            container.setBackgroundColor(Color.parseColor("#18181B"))
-            textView.setTextColor(Color.parseColor("#FFFFFF"))
-            imageView.setColorFilter(Color.parseColor("#FFFFFF"))
-        } else {
-            val typedValue = TypedValue()
-            theme.resolveAttribute(R.attr.selectableItemBackground, typedValue, true)
-            container.setBackgroundResource(typedValue.resourceId)
-            textView.setTextColor(Color.parseColor("#3F3F46"))
-            imageView.setColorFilter(Color.parseColor("#71717A"))
+        binding.cardActiveSessions.setOnClickListener {
+            val intent = Intent(this, ReservationsActivity::class.java).apply {
+                putExtra(ReservationsActivity.EXTRA_FILTER, "history")
+            }
+            startActivity(intent)
         }
     }
 
@@ -198,7 +117,6 @@ class MainActivity : AppCompatActivity() {
                 launch {
                     viewModel.isLoading.collect { isLoading ->
                         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-                        binding.btnRefresh.isEnabled = !isLoading
                     }
                 }
 
@@ -238,6 +156,24 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun onDashboardReselected() {
+        binding.nestedScrollView.smoothScrollTo(0, 0)
+        viewModel.loadSummary()
+    }
+
+    private fun setupBottomNavigation() {
+        com.solargridx.app.utils.BottomNavigationHelper.setup(
+            this,
+            binding.bottomNavigation,
+            com.solargridx.app.R.id.nav_dashboard
+        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        binding.bottomNavigation.selectedItemId = com.solargridx.app.R.id.nav_dashboard
     }
 
     private fun navigateToLogin() {

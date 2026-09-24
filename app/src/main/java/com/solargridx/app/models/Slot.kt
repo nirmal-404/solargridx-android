@@ -9,8 +9,11 @@ import com.google.gson.annotations.SerializedName
  *           to safely handle various C# API JSON naming conventions.
  */
 data class Slot(
-    @SerializedName("id", alternate = ["slotId", "SlotId", "Id"])
+    @SerializedName("id", alternate = ["Id"])
     val id: String = "",
+
+    @SerializedName("slotId", alternate = ["SlotId"])
+    val slotId: String? = null,
 
     @SerializedName("stationId", alternate = ["StationId"])
     val stationId: String = "",
@@ -21,8 +24,11 @@ data class Slot(
     @SerializedName("endTime", alternate = ["End", "endTimeUtc", "EndTime", "EndUtc"])
     val endTime: String = "",
 
-    @SerializedName("capacityKwh", alternate = ["availableCapacityKwh", "remainingCapacityKwh", "CapacityKwh", "Capacity"])
-    val capacityKwh: Double? = null,
+    @SerializedName("availableCapacity", alternate = ["availableCapacityKwh", "remainingCapacityKwh"])
+    val availableCapacity: Double? = null,
+
+    @SerializedName("capacity", alternate = ["totalCapacity", "TotalCapacity", "CapacityKwh", "Capacity"])
+    val totalCapacity: Double? = null,
 
     @SerializedName("status", alternate = ["Status"])
     val status: String? = null,
@@ -30,6 +36,12 @@ data class Slot(
     @SerializedName("isAvailable", alternate = ["available", "Available"])
     val isAvailable: Boolean? = null
 ) {
+    val effectiveSlotId: String
+        get() = slotId?.ifBlank { id } ?: id
+
+    val capacityKwh: Double?
+        get() = availableCapacity ?: totalCapacity
+
     /** Helper property to check if the slot is currently eligible for booking */
     val isEligible: Boolean
         get() {

@@ -143,7 +143,8 @@
         <!-- Tab Content Area -->
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:fillViewport="true">
 
             <FrameLayout
@@ -177,7 +178,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Configure Dispatch Token"
+                                android:text="Approved Reservation QR Dispatch"
                                 android:textColor="#09090B"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -186,15 +187,31 @@
                                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:hint="Station ID / Name">
+                                android:layout_marginTop="14dp"
+                                android:hint="Approved Reservation ID *">
+
+                                <com.google.android.material.textfield.TextInputEditText
+                                    android:id="@+id/etReservationId"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:inputType="textCapCharacters"
+                                    android:text="RSV-8BAB6BCEC6A3" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:hint="Station ID / Node">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etStationName"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="text"
-                                    android:text="SGX-01 (Colombo Central Node)" />
+                                    android:text="SGXST-001" />
 
                             </com.google.android.material.textfield.TextInputLayout>
 
@@ -535,6 +552,18 @@
                                 android:textSize="13sp"
                                 tools:text="Station: SGX-01 (Colombo Central)\nAllocation: 25.0 kWh · Battery Slot #2\nUser: prosumer@solargridx.com" />
 
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnCompleteTransfer"
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:layout_marginTop="14dp"
+                                android:backgroundTint="#166534"
+                                android:text="⚡ Complete Energy Transfer"
+                                android:textColor="#FFFFFF"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                app:cornerRadius="8dp" />
+
                         </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
@@ -561,6 +590,24 @@
             </FrameLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <!-- Bottom Navigation Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E4E4E7" />
+
+        <!-- Bottom Navigation Bar -->
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottomNavigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            app:elevation="8dp"
+            app:itemIconTint="@color/bottom_nav_colors"
+            app:itemTextColor="@color/bottom_nav_colors"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/menu_bottom_navigation" />
 
     </LinearLayout>
 

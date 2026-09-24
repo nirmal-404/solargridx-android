@@ -191,24 +191,22 @@ class CreateReservationViewModel(application: Application) : AndroidViewModel(ap
             return
         }
 
-        val selCal = Calendar.getInstance().apply { time = _selectedDate.value }
-        val selYear = selCal.get(Calendar.YEAR)
-        val selMonth = selCal.get(Calendar.MONTH)
-        val selDay = selCal.get(Calendar.DAY_OF_MONTH)
+        val utcFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+        val targetDateStr = utcFormat.format(_selectedDate.value)
 
         val filtered = allFetchedSlots.filter { slot ->
             if (!slot.isEligible) return@filter false
 
-            val slotDate = parseSlotDate(slot.startTime)
-            if (slotDate != null) {
-                val slotCal = Calendar.getInstance().apply { time = slotDate }
-                slotCal.get(Calendar.YEAR) == selYear &&
-                        slotCal.get(Calendar.MONTH) == selMonth &&
-                        slotCal.get(Calendar.DAY_OF_MONTH) == selDay
+            val slotDateStr = if (slot.startTime.length >= 10) {
+                slot.startTime.substring(0, 10)
             } else {
-                // If timestamp cannot be parsed into a specific date, include eligible slots
-                true
+                val parsed = parseSlotDate(slot.startTime)
+                parsed?.let { utcFormat.format(it) } ?: ""
             }
+
+            slotDateStr.isBlank() || slotDateStr == targetDateStr
         }
 
         _availableSlots.value = filtered
@@ -257,7 +255,7 @@ class CreateReservationViewModel(application: Application) : AndroidViewModel(ap
         val capacity = validateCapacityInput(_requestedCapacityText.value) ?: return
 
         val stationIdCode = station.stationId.ifBlank { station.id }
-        val slotIdCode = slot.id.ifBlank { slot.stationId }
+        val slotIdCode = slot.effectiveSlotId
 
         if (slotIdCode.isBlank()) {
             _slotsError.value = "Invalid slot identifier"

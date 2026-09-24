@@ -3,82 +3,171 @@ package com.solargridx.app.repositories
 import android.content.Context
 import com.google.gson.JsonParser
 import com.solargridx.app.models.CreateReservationRequest
+import com.solargridx.app.models.QrTokenResponse
 import com.solargridx.app.models.ReservationResponse
 import com.solargridx.app.models.Slot
+import com.solargridx.app.models.StationResponse
+import com.solargridx.app.models.UpdateReservationRequest
 import com.solargridx.app.network.ReservationApiService
-import com.solargridx.app.utils.SessionManager
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
+import com.solargridx.app.network.RetrofitClient
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 /**
  * ReservationRepository.kt
- * Handles network requests for slots and reservation creation, injecting the stored JWT token.
+ * Handles network requests for reservations, slots, and QR tokens, injecting the stored JWT token.
  */
 class ReservationRepository(context: Context) {
 
-    private val sessionManager = SessionManager(context)
-
-    /** Interceptor to attach the stored JWT Bearer token to all outgoing HTTP requests */
-    private val authInterceptor = Interceptor { chain ->
-        val token = sessionManager.fetchAuthToken()
-        val request = if (!token.isNullOrBlank()) {
-            val bearerHeader = if (token.startsWith("Bearer ", ignoreCase = true)) token else "Bearer $token"
-            chain.request().newBuilder()
-                .addHeader("Authorization", bearerHeader)
-                .build()
-        } else {
-            chain.request()
-        }
-        chain.proceed(request)
-    }
-
-    private val httpClient: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(authInterceptor)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-        .connectTimeout(15, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .build()
-
-    private val api: ReservationApiService = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:5205/")
-        .client(httpClient)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-        .create(ReservationApiService::class.java)
+    private val api: ReservationApiService = RetrofitClient.createAuthenticatedService(
+        context,
+        ReservationApiService::class.java
+    )
 
     /** Fetches energy slots for the specified station ID. */
-    suspend fun getSlotsForStation(stationId: String): Result<List<Slot>> = runCatching {
-        val response = api.getSlotsForStation(stationId)
-        if (!response.isSuccessful || response.body() == null) {
-            val fallbackResponse = api.getSlotsByQuery(stationId)
-            if (fallbackResponse.isSuccessful && fallbackResponse.body() != null) {
-                return@runCatching fallbackResponse.body()!!
+    suspend fun getSlotsForStation(stationId: String): Result<List<Slot>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getSlotsForStation(stationId)
+            if (!response.isSuccessful || response.body() == null) {
+                val fallbackResponse = api.getSlotsByQuery(stationId)
+                if (fallbackResponse.isSuccessful && fallbackResponse.body() != null) {
+                    return@runCatching fallbackResponse.body()!!
+                }
             }
-        }
-        if (response.isSuccessful) {
-            response.body() ?: emptyList()
-        } else {
-            val errorRaw = response.errorBody()?.string() ?: ""
-            val message = parseErrorMessage(errorRaw) ?: "Server returned status ${response.code()}"
-            error(message)
+            if (response.isSuccessful) {
+                response.body() ?: emptyList()
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Server returned status ${response.code()}"
+                error(message)
+            }
         }
     }
 
     /** Submits a reservation request to POST /api/reservations */
-    suspend fun createReservation(request: CreateReservationRequest): Result<ReservationResponse> = runCatching {
-        val response = api.createReservation(request)
-        if (response.isSuccessful) {
-            response.body() ?: ReservationResponse(message = "Reservation created successfully")
-        } else {
-            val errorRaw = response.errorBody()?.string() ?: ""
-            val message = parseErrorMessage(errorRaw) ?: "Failed to create reservation (${response.code()})"
-            error(message)
+    suspend fun createReservation(request: CreateReservationRequest): Result<ReservationResponse> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.createReservation(request)
+            if (response.isSuccessful) {
+                response.body() ?: ReservationResponse(message = "Reservation created successfully")
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to create reservation (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    /** Lists reservations with optional filters (e.g. group=pending/history/current) */
+    suspend fun getReservations(
+        group: String? = null,
+        status: String? = null,
+        stationId: String? = null,
+        nic: String? = null
+    ): Result<List<ReservationResponse>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getReservations(group = group, status = status, stationId = stationId, nic = nic)
+            if (response.isSuccessful) {
+                response.body() ?: emptyList()
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to fetch reservations (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun getPendingReservations(): Result<List<ReservationResponse>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getPendingReservations()
+            if (response.isSuccessful) {
+                response.body() ?: emptyList()
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to fetch pending reservations (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun getHistoryReservations(): Result<List<ReservationResponse>> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.getHistoryReservations()
+            if (response.isSuccessful) {
+                response.body() ?: emptyList()
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to fetch history reservations (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun updateReservation(
+        reservationId: String,
+        request: UpdateReservationRequest
+    ): Result<ReservationResponse> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.updateReservation(reservationId, request)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to update reservation (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun cancelReservation(reservationId: String): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.cancelReservation(reservationId)
+            if (response.isSuccessful) {
+                Unit
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to cancel reservation (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun approveReservation(reservationId: String): Result<ReservationResponse> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.approveReservation(reservationId)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to approve reservation (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun rejectReservation(reservationId: String): Result<Unit> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.rejectReservation(reservationId)
+            if (response.isSuccessful) {
+                Unit
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to reject reservation (${response.code()})"
+                error(message)
+            }
+        }
+    }
+
+    suspend fun issueTransactionToken(reservationId: String): Result<QrTokenResponse> = withContext(Dispatchers.IO) {
+        runCatching {
+            val response = api.issueTransactionToken(reservationId)
+            if (response.isSuccessful && response.body() != null) {
+                response.body()!!
+            } else {
+                val errorRaw = response.errorBody()?.string() ?: ""
+                val message = parseErrorMessage(errorRaw) ?: "Failed to get QR token (${response.code()})"
+                error(message)
+            }
         }
     }
 
