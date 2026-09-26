@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    tools:context=".ui.NodeManagementActivity">
+
+    <!-- AppBar with minimal modern header -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Node Management"
+            app:titleCentered="true"
+            app:titleTextAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:menu="@menu/menu_node_management" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:text="Manage backoffice node inventory and operating schedules"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvNodeMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_rounded_message"
+                android:padding="12dp"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="13sp"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progressNodes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="24dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvNodesEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="32dp"
+                android:text="No nodes have been created yet."
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/nodeListContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Action Button for adding a node -->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/btnAddNode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="72dp"
+        android:text="New Node"
+        app:icon="@drawable/ic_sun"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -10,6 +10,17 @@ val localSettings = Properties().apply {
     if (settingsFile.exists()) settingsFile.inputStream().use { load(it) }
 }
 
+val mapsApiKey = localSettings.getProperty("MAPS_API_KEY")
+    ?: System.getenv("MAPS_API_KEY")
+    ?: ""
+val debugApiBaseUrl = localSettings.getProperty("API_BASE_URL_DEBUG")
+    ?: localSettings.getProperty("API_BASE_URL")
+    ?: System.getenv("API_BASE_URL")
+    ?: "http://10.0.2.2:5205/"
+val releaseApiBaseUrl = localSettings.getProperty("API_BASE_URL_RELEASE")
+    ?: System.getenv("API_BASE_URL_RELEASE")
+    ?: ""
+
 android {
     namespace = "com.solargridx.app"
     compileSdk = 36
@@ -20,11 +31,20 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
-        manifestPlaceholders["MAPS_API_KEY"] = localSettings.getProperty("MAPS_API_KEY", "")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
     }
-    buildFeatures { viewBinding = true }
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
     buildTypes {
+        debug {
+            buildConfigField("String", "API_BASE_URL", "\"$debugApiBaseUrl\"")
+            manifestPlaceholders["USES_CLEARTEXT_TRAFFIC"] = "true"
+        }
         release {
+            buildConfigField("String", "API_BASE_URL", "\"$releaseApiBaseUrl\"")
+            manifestPlaceholders["USES_CLEARTEXT_TRAFFIC"] = "false"
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -34,6 +54,20 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+}
+
+val validateReleaseApiUrl = tasks.register("validateReleaseApiUrl") {
+    doLast {
+        require(releaseApiBaseUrl.startsWith("https://", ignoreCase = true)) {
+            "Set API_BASE_URL_RELEASE to the production HTTPS API base URL before building Release."
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name.contains("Release", ignoreCase = true) && name != "validateReleaseApiUrl") {
+        dependsOn(validateReleaseApiUrl)
+    }
 }
 
 dependencies {

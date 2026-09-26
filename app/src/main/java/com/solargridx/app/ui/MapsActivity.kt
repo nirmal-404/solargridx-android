@@ -13,11 +13,15 @@ package com.solargridx.app.ui
  */
 
 import android.content.Intent
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -33,15 +37,20 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.solargridx.app.R
 import com.solargridx.app.databinding.ActivityMapsBinding
 import com.solargridx.app.models.Station
+import com.solargridx.app.utils.SessionManager
 import kotlinx.coroutines.launch
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityMapsBinding
     private val viewModel: MapsViewModel by viewModels()
+    private var reloadAfterManagement = false
 
     /** Nullable until onMapReady fires — markers are deferred until both map and data are ready. */
     private var googleMap: GoogleMap? = null
@@ -64,6 +73,19 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             windowInsets
         }
 
+        val sessionManager = SessionManager(this)
+        if (!sessionManager.isLoggedIn()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+        val isBackoffice = sessionManager.fetchUser()?.role.equals("Backoffice", ignoreCase = true)
+        binding.btnManageNodes.visibility = if (isBackoffice) View.VISIBLE else View.GONE
+        binding.btnManageNodes.setOnClickListener {
+            reloadAfterManagement = true
+            startActivity(Intent(this, NodeManagementActivity::class.java))
+        }
+
         com.solargridx.app.utils.BottomNavigationHelper.setup(
             this,
             binding.bottomNavigation,
@@ -84,17 +106,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Retry loading stations on explicit user request.
         binding.btnMapRefresh.setOnClickListener {
-            viewModel.loadStations()
+            viewModel.loadAllStations()
         }
 
         // Observe ViewModel state flows on the lifecycle scope so we stop
         // collecting when the Activity moves to the background.
         observeViewModel()
+        viewModel.loadAllStations()
     }
 
     override fun onResume() {
         super.onResume()
         binding.bottomNavigation.selectedItemId = com.solargridx.app.R.id.nav_map
+        if (reloadAfterManagement) {
+            reloadAfterManagement = false
+            viewModel.loadAllStations()
+        }
     }
 
     /** Called by the Maps SDK when the GoogleMap instance is ready to use. */
@@ -128,9 +155,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 // Plot markers whenever the station list changes.
                 launch {
                     viewModel.stations.collect { stations ->
-                        if (googleMap != null && stations.isNotEmpty()) {
-                            plotMarkers(stations)
-                        }
+                        if (googleMap != null) plotMarkers(stations)
                         // Update the station count label.
                         binding.tvStationCount.text =
                             "${stations.size} active node${if (stations.size != 1) "s" else ""}"
@@ -141,13 +166,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 launch {
                     viewModel.error.collect { errorMessage ->
                         errorMessage?.let {
+                            binding.tvMapMessage.text = it
+                            binding.tvMapMessage.visibility = View.VISIBLE
                             Toast.makeText(this@MapsActivity, it, Toast.LENGTH_LONG).show()
                         }
+                    }
+                }
+
+                launch {
+                    viewModel.mapMessage.collect { message ->
+                        binding.tvMapMessage.text = message.orEmpty()
+                        binding.tvMapMessage.visibility = if (message.isNullOrBlank()) View.GONE else View.VISIBLE
                     }
                 }
             }
         }
     }
+
+
 
     /** Clears existing markers and places one per station with a rich InfoWindow snippet. */
     private fun plotMarkers(stations: List<Station>) {
@@ -155,6 +191,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Clear any markers from a previous load.
         map.clear()
+        if (stations.isEmpty()) {
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(7.8731, 80.7718), 8f))
+            return
+        }
 
         val boundsBuilder = LatLngBounds.Builder()
         var boundsHasPoint = false
