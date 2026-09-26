@@ -13,9 +13,14 @@ package com.solargridx.app.repositories
  */
 
 import android.content.Context
+import com.solargridx.app.BuildConfig
 import com.solargridx.app.models.Station
+import com.solargridx.app.models.CreateStationRequest
+import com.solargridx.app.models.UpdateStationRequest
+import com.solargridx.app.models.UpdateStationScheduleRequest
 import com.solargridx.app.network.StationApiService
 import com.solargridx.app.utils.SessionManager
+import com.google.gson.JsonParser
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -51,7 +56,7 @@ class StationRepository(context: Context) {
         .build()
 
     private val api: StationApiService = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:5205/")   // 10.0.2.2 maps to localhost on the Android emulator.
+        .baseUrl(BuildConfig.API_BASE_URL)
         .client(httpClient)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -91,7 +96,55 @@ class StationRepository(context: Context) {
             if (response.isSuccessful) {
                 response.body() ?: emptyList()
             } else {
-                error("Server returned ${response.code()}: ${response.message()}")
+                error(apiError(response.code(), response.message(), response.errorBody()?.string()))
             }
         }
+
+    // Loads all stations for Backoffice management, including inactive nodes.
+    suspend fun getManagedStations(): Result<List<Station>> = runCatching {
+        val response = api.getStations(includeInactive = true)
+        if (response.isSuccessful) response.body() ?: emptyList()
+        else error(apiError(response.code(), response.message(), response.errorBody()?.string()))
+    }
+
+    // Creates a node through the authenticated API.
+    suspend fun createStation(request: CreateStationRequest): Result<Station> = runCatching {
+        val response = api.createStation(request)
+        if (response.isSuccessful) response.body() ?: error("The API returned an empty station response.")
+        else error(apiError(response.code(), response.message(), response.errorBody()?.string()))
+    }
+
+    // Updates node details through the authenticated API.
+    suspend fun updateStation(stationId: String, request: UpdateStationRequest): Result<Station> = runCatching {
+        val response = api.updateStation(stationId, request)
+        if (response.isSuccessful) response.body() ?: error("The API returned an empty station response.")
+        else error(apiError(response.code(), response.message(), response.errorBody()?.string()))
+    }
+
+    // Replaces the weekly node schedule through the authenticated API.
+    suspend fun updateSchedule(stationId: String, request: UpdateStationScheduleRequest): Result<Station> = runCatching {
+        val response = api.updateSchedule(stationId, request)
+        if (response.isSuccessful) response.body() ?: error("The API returned an empty station response.")
+        else error(apiError(response.code(), response.message(), response.errorBody()?.string()))
+    }
+
+    // Deactivates a node and preserves the API's reservation-conflict message.
+    suspend fun deactivateStation(stationId: String): Result<Unit> = runCatching {
+        val response = api.deactivateStation(stationId)
+        if (!response.isSuccessful) error(apiError(response.code(), response.message(), response.errorBody()?.string()))
+    }
+
+    // Reactivates a node through the authenticated API.
+    suspend fun reactivateStation(stationId: String): Result<Unit> = runCatching {
+        val response = api.reactivateStation(stationId)
+        if (!response.isSuccessful) error(apiError(response.code(), response.message(), response.errorBody()?.string()))
+    }
+
+    // Extracts the server's standard error envelope message where available.
+    private fun apiError(code: Int, fallback: String, body: String?): String {
+        val message = runCatching {
+            JsonParser.parseString(body).asJsonObject.get("message")?.asString
+        }.getOrNull()
+        return "Server returned $code: ${message?.takeIf(String::isNotBlank) ?: fallback}"
+    }
 }

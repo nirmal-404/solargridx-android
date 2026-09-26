@@ -17,7 +17,7 @@ typealias Station = StationResponse
 /** Represents a single day's operating window inside an OperationalSchedule. */
 data class DailyHours(
     @SerializedName("day", alternate = ["Day"])
-    val day: Int = 0,
+    val day: String = "",
 
     @SerializedName("open", alternate = ["Open"])
     val open: String = "",

@@ -38,20 +38,39 @@ class MapsViewModel(application: Application) : AndroidViewModel(application) {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    init {
-        // Kick off the initial station load when the ViewModel is first created.
-        loadStations()
+    private val _mapMessage = MutableStateFlow<String?>(null)
+    val mapMessage: StateFlow<String?> = _mapMessage
+
+    // Fetches active stations around the device's current coordinates.
+    fun loadNearbyStations(latitude: Double, longitude: Double) {
+        loadStations(mapMessage = null) {
+            repository.getNearbyStations(latitude, longitude, NearbyRadiusKm)
+        }
     }
 
-    /** Fetches active stations from the API and updates the observable state flows. */
-    fun loadStations() {
+    // Fetches the active station list when location is unavailable or permission is denied.
+    fun loadAllStations(mapMessage: String? = null) {
+        loadStations(mapMessage) {
+            repository.getStations(includeInactive = false)
+        }
+    }
+
+    // Updates the station list and user-facing loading/fallback state from a repository result.
+    private fun loadStations(
+        mapMessage: String?,
+        request: suspend () -> Result<List<Station>>,
+    ) {
         viewModelScope.launch {
             _isLoading.value = true
             _error.value = null
+            _mapMessage.value = mapMessage
 
-            repository.getStations(includeInactive = false)
+            request()
                 .onSuccess { stationList ->
                     _stations.value = stationList
+                    if (stationList.isEmpty()) {
+                        _mapMessage.value = "No active nodes found for this map view."
+                    }
                 }
                 .onFailure { throwable ->
                     _error.value = throwable.message ?: "Unknown error loading stations."
@@ -59,5 +78,9 @@ class MapsViewModel(application: Application) : AndroidViewModel(application) {
 
             _isLoading.value = false
         }
+    }
+
+    private companion object {
+        const val NearbyRadiusKm = 25.0
     }
 }
