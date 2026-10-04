@@ -19,6 +19,7 @@ import com.solargridx.app.models.User
 import com.solargridx.app.repositories.ProsumerRepository
 import com.solargridx.app.utils.BottomNavigationHelper
 import com.solargridx.app.utils.SessionManager
+import com.solargridx.app.utils.ThemeManager
 import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity() {
@@ -64,6 +65,13 @@ class ProfileActivity : AppCompatActivity() {
             binding.bottomNavigation,
             0 // No active bottom nav tab explicitly highlighted for profile, or keeps previous
         )
+
+        // Initialize Theme selection RadioGroup
+        when (ThemeManager.getThemeMode(this)) {
+            ThemeManager.MODE_LIGHT -> binding.rbThemeLight.isChecked = true
+            ThemeManager.MODE_DARK -> binding.rbThemeDark.isChecked = true
+            else -> binding.rbThemeSystem.isChecked = true
+        }
 
         val user = sessionManager.fetchUser()
         populateFields(user)
@@ -112,6 +120,17 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupListeners() {
+        binding.rgThemeMode.setOnCheckedChangeListener { _, checkedId ->
+            val selectedMode = when (checkedId) {
+                R.id.rbThemeLight -> ThemeManager.MODE_LIGHT
+                R.id.rbThemeDark -> ThemeManager.MODE_DARK
+                else -> ThemeManager.MODE_SYSTEM
+            }
+            if (selectedMode != ThemeManager.getThemeMode(this)) {
+                ThemeManager.setThemeMode(this, selectedMode)
+            }
+        }
+
         binding.btnBack.setOnClickListener {
             finish()
         }
