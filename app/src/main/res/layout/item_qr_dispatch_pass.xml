@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#E4E4E7"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="QR"
+                android:src="@drawable/ic_qr_code"
+                app:tint="#18181B" />
+
+            <TextView
+                android:id="@+id/tvPassId"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:textColor="#09090B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                tools:text="DISP-SGX-2026-X89" />
+
+            <TextView
+                android:id="@+id/tvPassStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#DCFCE7"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:textColor="#166534"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                tools:text="DISPATCHED" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="10dp"
+            android:background="#F4F4F5" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvStationDetails"
+                    android:textColor="#3F3F46"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    tools:text="SGX-01 (Colombo Central)" />
+
+                <TextView
+                    android:id="@+id/tvEnergyDetails"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#71717A"
+                    android:textSize="12sp"
+                    tools:text="Allocation: 25.0 kWh · Battery Slot #2" />
+
+                <TextView
+                    android:id="@+id/tvPassTimestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#A1A1AA"
+                    android:textSize="11sp"
+                    tools:text="Dispatched: Today, 14:30" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivPassQrThumbnail"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:contentDescription="QR Preview"
+                tools:src="@drawable/ic_qr_code" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
