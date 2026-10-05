@@ -27,7 +27,7 @@
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:contentDescription="QR"
+                android:contentDescription="@string/desc_qr"
                 android:src="@drawable/ic_qr_code"
                 app:tint="#18181B" />
 
@@ -106,7 +106,7 @@
                 android:id="@+id/ivPassQrThumbnail"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:contentDescription="QR Preview"
+                android:contentDescription="@string/desc_qr_preview"
                 tools:src="@drawable/ic_qr_code" />
 
         </LinearLayout>

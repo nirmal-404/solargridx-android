@@ -28,7 +28,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
+                android:contentDescription="@string/desc_back"
                 android:src="@drawable/ic_chevron_left"
                 app:tint="#18181B" />
 
@@ -42,7 +42,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Book Energy Slot"
+                    android:text="@string/title_book_energy_slot"
                     android:textColor="#09090B"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -50,7 +50,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Prosumer Microgrid Energy Booking"
+                    android:text="@string/subtitle_book_slot"
                     android:textColor="#71717A"
                     android:textSize="12sp" />
 
@@ -62,7 +62,7 @@
                 android:background="#18181B"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
-                android:text="⚡ Prosumer"
+                android:text="@string/badge_prosumer_bolt"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -115,7 +115,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Reservation Details"
+                            android:text="@string/section_reservation_details"
                             android:textColor="#09090B"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -124,7 +124,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Select a solar microgrid station and an eligible energy slot."
+                            android:text="@string/desc_select_microgrid_station"
                             android:textColor="#71717A"
                             android:textSize="12sp" />
 
@@ -135,7 +135,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:hint="Microgrid Station *"
+                            android:hint="@string/hint_microgrid_station"
                             app:startIconDrawable="@drawable/ic_sun"
                             app:startIconTint="#2563EB">
 
@@ -158,7 +158,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:hint="Reservation Date *"
+                            android:hint="@string/hint_reservation_date"
                             app:endIconDrawable="@drawable/ic_calendar"
                             app:endIconMode="custom"
                             app:endIconTint="#2563EB"
@@ -186,7 +186,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:hint="Available Energy Slot *"
+                            android:hint="@string/hint_available_energy_slot"
                             app:startIconDrawable="@drawable/ic_clock"
                             app:startIconTint="#EA580C">
 
@@ -210,7 +210,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:hint="Requested Capacity *"
+                            android:hint="@string/hint_requested_capacity"
                             app:suffixText="kWh"
                             app:suffixTextColor="#2563EB"
                             app:startIconDrawable="@drawable/ic_lightning"
@@ -222,7 +222,7 @@
                                 android:layout_height="wrap_content"
                                 android:inputType="numberDecimal"
                                 android:paddingVertical="14dp"
-                                android:text="10"
+                                android:text="@string/default_capacity_kwh"
                                 android:textColor="#09090B"
                                 android:textSize="14sp" />
 
@@ -233,7 +233,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            android:text="Energy-Transfer Type *"
+                            android:text="@string/label_energy_transfer_type"
                             android:textColor="#09090B"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -251,7 +251,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:checked="true"
-                                android:text="⚡ Energy Drop-Off"
+                                android:text="@string/type_energy_dropoff"
                                 android:textColor="#09090B"
                                 android:textSize="13sp" />
 
@@ -260,7 +260,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="🔋 Energy Charging"
+                                android:text="@string/type_energy_charging"
                                 android:textColor="#09090B"
                                 android:textSize="13sp" />
 
@@ -273,7 +273,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="16dp"
-                            android:hint="Additional Notes (Optional)">
+                            android:hint="@string/hint_additional_notes_optional">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etNotes"
@@ -311,7 +311,7 @@
                                     android:id="@+id/tvSlotDetailTitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="⚡ Selected Slot Availability"
+                                    android:text="@string/header_slot_availability"
                                     android:textColor="#166534"
                                     android:textSize="13sp"
                                     android:textStyle="bold" />
@@ -321,7 +321,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="4dp"
-                                    android:text="Capacity: 25.0 kWh available"
+                                    android:text="@string/sample_slot_capacity"
                                     android:textColor="#15803D"
                                     android:textSize="12sp" />
 
@@ -336,7 +336,7 @@
                             android:layout_height="52dp"
                             android:layout_marginTop="20dp"
                             android:backgroundTint="#18181B"
-                            android:text="Confirm Reservation"
+                            android:text="@string/btn_confirm_reservation"
                             android:textAllCaps="false"
                             android:textColor="#FFFFFF"
                             android:textSize="15sp"
@@ -371,7 +371,7 @@
                             android:id="@+id/tvErrorTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Reservation Error"
+                            android:text="@string/title_reservation_error"
                             android:textColor="#991B1B"
                             android:textSize="14sp"
                             android:textStyle="bold" />
@@ -393,7 +393,7 @@
                             android:layout_marginTop="8dp"
                             android:paddingHorizontal="12dp"
                             android:paddingVertical="0dp"
-                            android:text="Retry / Refresh Slots"
+                            android:text="@string/btn_retry_refresh_slots"
                             android:textColor="#991B1B"
                             android:textSize="12sp"
                             app:strokeColor="#FCA5A5" />
@@ -440,7 +440,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
                                 android:layout_weight="1"
-                                android:text="Your reservation has been submitted for approval."
+                                android:text="@string/msg_reservation_submitted"
                                 android:textColor="#166534"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -479,7 +479,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="44dp"
                                 android:layout_weight="1"
-                                android:text="Book Another Slot"
+                                android:text="@string/btn_book_another_slot"
                                 android:textColor="#09090B"
                                 android:textSize="13sp"
                                 app:strokeColor="#E4E4E7" />
@@ -491,7 +491,7 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:backgroundTint="#18181B"
-                                android:text="Done / Dashboard"
+                                android:text="@string/btn_done_dashboard"
                                 android:textColor="#FFFFFF"
                                 android:textSize="13sp" />
 

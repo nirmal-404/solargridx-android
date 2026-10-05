@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_arrow_back"
-                android:contentDescription="Back"
+                android:contentDescription="@string/desc_back"
                 android:layout_marginEnd="8dp" />
 
             <!-- Title -->
@@ -63,7 +63,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Solar Node Map"
+                android:text="@string/title_solar_node_map"
                 android:textSize="15sp"
                 android:textStyle="bold"
                 android:textColor="?attr/colorOnSurface" />
@@ -73,7 +73,7 @@
                 android:id="@+id/tv_station_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Loading…"
+                android:text="@string/msg_loading"
                 android:textSize="11sp"
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:layout_marginEnd="8dp" />
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_refresh"
-                android:contentDescription="Refresh stations" />
+                android:contentDescription="@string/desc_refresh_stations" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

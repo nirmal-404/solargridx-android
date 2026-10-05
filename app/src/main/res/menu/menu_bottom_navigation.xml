@@ -3,21 +3,21 @@
     <item
         android:id="@+id/nav_dashboard"
         android:icon="@drawable/ic_dashboard"
-        android:title="Dashboard" />
+        android:title="@string/nav_dashboard" />
     <item
         android:id="@+id/nav_book_slot"
         android:icon="@drawable/ic_calendar"
-        android:title="Book Slot" />
+        android:title="@string/nav_book_slot" />
     <item
         android:id="@+id/nav_map"
         android:icon="@drawable/ic_map"
-        android:title="Node Map" />
+        android:title="@string/nav_node_map" />
     <item
         android:id="@+id/nav_qr"
         android:icon="@drawable/ic_qr_code"
-        android:title="QR Pass" />
+        android:title="@string/nav_qr_pass" />
     <item
         android:id="@+id/nav_history"
         android:icon="@drawable/ic_history"
-        android:title="History" />
+        android:title="@string/nav_history" />
 </menu>

@@ -28,7 +28,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
+                android:contentDescription="@string/desc_back"
                 android:src="@drawable/ic_arrow_back"
                 app:tint="#18181B" />
 
@@ -42,7 +42,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="QR Energy Dispatcher"
+                    android:text="@string/title_qr_energy_dispatcher"
                     android:textColor="#09090B"
                     android:textSize="18sp"
                     android:textStyle="bold" />
@@ -50,7 +50,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Solar Microgrid Dispatch &amp; Access Control"
+                    android:text="@string/subtitle_qr_dispatcher"
                     android:textColor="#71717A"
                     android:textSize="12sp" />
 
@@ -62,7 +62,7 @@
                 android:background="#166534"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
-                android:text="LIVE"
+                android:text="@string/badge_live"
                 android:textColor="#FFFFFF"
                 android:textSize="11sp"
                 android:textStyle="bold" />
@@ -98,7 +98,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
-                    android:text="Generate"
+                    android:text="@string/tab_generate"
                     android:textColor="#FFFFFF"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -112,7 +112,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
-                    android:text="Scan &amp; Verify"
+                    android:text="@string/tab_scan_verify"
                     android:textColor="#71717A"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -126,7 +126,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
-                    android:text="Active Passes"
+                    android:text="@string/tab_active_passes"
                     android:textColor="#71717A"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -178,7 +178,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Approved Reservation QR Dispatch"
+                                android:text="@string/header_approved_reservation_qr"
                                 android:textColor="#09090B"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -187,7 +187,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Select an approved reservation to view or generate its QR dispatch pass."
+                                android:text="@string/desc_select_approved_reservation"
                                 android:textColor="#71717A"
                                 android:textSize="12sp" />
 
@@ -197,7 +197,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="16dp"
-                                android:hint="Select Approved Reservation"
+                                android:hint="@string/hint_select_approved_reservation"
                                 app:boxStrokeColor="#18181B"
                                 app:hintTextColor="#18181B">
 
@@ -227,7 +227,7 @@
                                     android:id="@+id/tvReservationSummaryTitle"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Reservation Details"
+                                    android:text="@string/section_reservation_details"
                                     android:textColor="#09090B"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -248,7 +248,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="52dp"
                                 android:layout_marginTop="18dp"
-                                android:text="Show QR Code"
+                                android:text="@string/btn_show_qr_code"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
@@ -284,7 +284,7 @@
                                 android:background="#DCFCE7"
                                 android:paddingHorizontal="12dp"
                                 android:paddingVertical="6dp"
-                                android:text="DISPATCH PASS READY"
+                                android:text="@string/header_dispatch_pass_ready"
                                 android:textColor="#166534"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
@@ -294,7 +294,7 @@
                                 android:layout_width="200dp"
                                 android:layout_height="200dp"
                                 android:layout_marginTop="16dp"
-                                android:contentDescription="Generated QR Pass"
+                                android:contentDescription="@string/desc_generated_qr_pass"
                                 tools:src="@drawable/ic_qr_code" />
 
                             <TextView
@@ -325,7 +325,7 @@
                                 android:background="#F4F4F5"
                                 android:gravity="center"
                                 android:padding="10dp"
-                                android:text="🔒 Secure dispatch reference generated by SolarGridX server. Grid Operators scan this token at the station to verify your reservation and authorize energy transfer."
+                                android:text="@string/desc_secure_dispatch_reference"
                                 android:textColor="#52525B"
                                 android:textSize="11sp" />
 
@@ -340,7 +340,7 @@
                                     style="@style/Widget.Material3.Button.OutlinedButton"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Share Pass"
+                                    android:text="@string/btn_share_pass"
                                     android:textColor="#09090B"
                                     app:icon="@drawable/ic_share"
                                     app:iconTint="#09090B"
@@ -352,7 +352,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="8dp"
-                                    android:text="Copy Token"
+                                    android:text="@string/btn_copy_token"
                                     android:textColor="#09090B"
                                     app:strokeColor="#E4E4E7" />
 
@@ -391,7 +391,7 @@
                             <ImageView
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
-                                android:contentDescription="Scan"
+                                android:contentDescription="@string/desc_scan"
                                 android:src="@drawable/ic_scan"
                                 app:tint="#166534" />
 
@@ -399,7 +399,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:text="Live QR Code Scanner"
+                                android:text="@string/title_live_qr_scanner"
                                 android:textColor="#09090B"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
@@ -409,7 +409,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
                                 android:gravity="center"
-                                android:text="Align dispatch QR pass inside camera viewfinder to verify slot access"
+                                android:text="@string/desc_align_qr_scanner"
                                 android:textColor="#71717A"
                                 android:textSize="12sp" />
 
@@ -418,7 +418,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="50dp"
                                 android:layout_marginTop="20dp"
-                                android:text="📷 Launch Live Camera Scanner"
+                                android:text="@string/btn_launch_camera_scanner"
                                 android:textColor="#FFFFFF"
                                 app:backgroundTint="#166534"
                                 app:cornerRadius="10dp" />
@@ -447,7 +447,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Manual Token Verification"
+                                android:text="@string/title_manual_token_verification"
                                 android:textColor="#09090B"
                                 android:textSize="15sp"
                                 android:textStyle="bold" />
@@ -457,7 +457,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="12dp"
-                                android:hint="Enter Pass Token or Payload">
+                                android:hint="@string/hint_enter_pass_token">
 
                                 <com.google.android.material.textfield.TextInputEditText
                                     android:id="@+id/etManualToken"
@@ -473,7 +473,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="48dp"
                                 android:layout_marginTop="12dp"
-                                android:text="Verify Token"
+                                android:text="@string/btn_verify_token"
                                 android:textColor="#09090B"
                                 app:strokeColor="#E4E4E7" />
 
@@ -510,7 +510,7 @@
                                     android:id="@+id/ivScanResultIcon"
                                     android:layout_width="28dp"
                                     android:layout_height="28dp"
-                                    android:contentDescription="Status"
+                                    android:contentDescription="@string/desc_status"
                                     android:src="@drawable/ic_check_circle"
                                     app:tint="#16A34A" />
 
@@ -519,7 +519,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="10dp"
-                                    android:text="VALID DISPATCH PASS"
+                                    android:text="@string/badge_valid_dispatch_pass"
                                     android:textColor="#166534"
                                     android:textSize="16sp"
                                     android:textStyle="bold" />
@@ -542,7 +542,7 @@
                                 android:layout_height="48dp"
                                 android:layout_marginTop="14dp"
                                 android:backgroundTint="#166534"
-                                android:text="⚡ Finalise Job"
+                                android:text="@string/btn_finalise_job"
                                 android:textColor="#FFFFFF"
                                 android:textSize="14sp"
                                 android:textStyle="bold"

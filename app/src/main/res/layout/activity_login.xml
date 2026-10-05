@@ -169,7 +169,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="New Prosumer? Register Account"
+                    android:text="@string/link_register_account"
                     android:textColor="#09090B"
                     android:textSize="13sp"
                     android:textStyle="bold" />

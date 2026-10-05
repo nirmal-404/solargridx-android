@@ -28,7 +28,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
+                android:contentDescription="@string/desc_back"
                 android:src="@drawable/ic_chevron_left"
                 app:tint="#18181B" />
 
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="Account Profile"
+                android:text="@string/title_account_profile"
                 android:textColor="#09090B"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -49,7 +49,7 @@
                 android:layout_height="36dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="Logout"
+                android:text="@string/action_logout"
                 android:textColor="#EF4444"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -107,7 +107,7 @@
                                     android:id="@+id/tvUserFullName"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Prosumer Account"
+                                    android:text="@string/label_prosumer_account"
                                     android:textColor="#FFFFFF"
                                     android:textSize="18sp"
                                     android:textStyle="bold" />
@@ -117,7 +117,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:text="prosumer@solargridx.local"
+                                    tools:text="prosumer@solargridx.local"
                                     android:textColor="#A1A1AA"
                                     android:textSize="13sp" />
 
@@ -147,7 +147,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="PRIMARY KEY (NIC)"
+                                    android:text="@string/label_primary_key_nic"
                                     android:textColor="#71717A"
                                     android:textSize="11sp"
                                     android:textStyle="bold" />
@@ -157,7 +157,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:text="200012345678"
+                                    tools:text="200012345678"
                                     android:textColor="#E4E4E7"
                                     android:textSize="14sp"
                                     android:textStyle="bold" />
@@ -172,7 +172,7 @@
                                 android:background="@drawable/bg_stat_accent"
                                 android:paddingHorizontal="10dp"
                                 android:paddingVertical="4dp"
-                                android:text="Prosumer · Active"
+                                android:text="@string/badge_prosumer_active"
                                 android:textColor="#FFFFFF"
                                 android:textSize="12sp"
                                 android:textStyle="bold" />
@@ -203,7 +203,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Personal &amp; Grid Details"
+                            android:text="@string/section_personal_grid_details"
                             android:textColor="#09090B"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -212,7 +212,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Update your contact info and residential microgrid node address."
+                            android:text="@string/desc_update_contact_info"
                             android:textColor="#71717A"
                             android:textSize="12sp" />
 
@@ -229,7 +229,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="6dp"
                                 android:layout_weight="1"
-                                android:hint="First Name"
+                                android:hint="@string/hint_first_name"
                                 app:boxCornerRadiusBottomEnd="8dp"
                                 app:boxCornerRadiusBottomStart="8dp"
                                 app:boxCornerRadiusTopEnd="8dp"
@@ -252,7 +252,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="6dp"
                                 android:layout_weight="1"
-                                android:hint="Last Name"
+                                android:hint="@string/hint_last_name"
                                 app:boxCornerRadiusBottomEnd="8dp"
                                 app:boxCornerRadiusBottomStart="8dp"
                                 app:boxCornerRadiusTopEnd="8dp"
@@ -276,7 +276,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:hint="Phone Number"
+                            android:hint="@string/hint_phone_number"
                             app:boxCornerRadiusBottomEnd="8dp"
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusTopEnd="8dp"
@@ -298,7 +298,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:hint="Address / Node Location"
+                            android:hint="@string/hint_node_address"
                             app:boxCornerRadiusBottomEnd="8dp"
                             app:boxCornerRadiusBottomStart="8dp"
                             app:boxCornerRadiusTopEnd="8dp"
@@ -320,7 +320,7 @@
                             android:layout_height="48dp"
                             android:layout_marginTop="18dp"
                             android:backgroundTint="#18181B"
-                            android:text="Save Profile Changes"
+                            android:text="@string/btn_save_profile"
                             android:textColor="#FFFFFF"
                             android:textSize="14sp"
                             android:textStyle="bold"
@@ -351,7 +351,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Account Deactivation"
+                            android:text="@string/title_account_deactivation"
                             android:textColor="#991B1B"
                             android:textSize="16sp"
                             android:textStyle="bold" />
@@ -361,7 +361,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="Submit an official deactivation request to SolarGridX backoffice administration. While deactivation is pending, active slot allocations may be concluded."
+                            android:text="@string/desc_account_deactivation"
                             android:textColor="#7F1D1D"
                             android:textSize="12sp" />
 
@@ -371,7 +371,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="46dp"
                             android:layout_marginTop="14dp"
-                            android:text="Request Account Deactivation"
+                            android:text="@string/btn_request_deactivation"
                             android:textColor="#DC2626"
                             android:textSize="13sp"
                             android:textStyle="bold"

@@ -27,7 +27,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Back"
+                android:contentDescription="@string/desc_back"
                 android:src="@drawable/ic_chevron_left"
                 app:tint="#18181B" />
 
@@ -36,13 +36,13 @@
                 android:layout_height="26dp"
                 android:layout_marginStart="8dp"
                 android:src="@drawable/logo_emblem"
-                android:contentDescription="SolarGridX Logo" />
+                android:contentDescription="@string/desc_solargridx_logo" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
-                android:text="SolarGridX Registration"
+                android:text="@string/title_registration"
                 android:textColor="#18181B"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -59,7 +59,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Prosumer Account Registration"
+                android:text="@string/subtitle_registration"
                 android:textColor="#09090B"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:text="Register with your National Identity Card (NIC) as primary key to buy and sell energy slots."
+                android:text="@string/msg_register_description"
                 android:textColor="#71717A"
                 android:textSize="13sp" />
 
@@ -96,7 +96,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:text="National Identity Card (NIC) *"
+                    android:text="@string/label_nic"
                     android:textColor="#18181B"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -120,7 +120,7 @@
                         android:id="@+id/etNic"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter NIC number"
+                        android:hint="@string/hint_nic"
                         android:inputType="textCapCharacters"
                         android:maxLines="1"
                         android:paddingVertical="12dp"
@@ -148,7 +148,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="4dp"
-                            android:text="First Name *"
+                            android:text="@string/label_first_name"
                             android:textColor="#18181B"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -169,7 +169,7 @@
                                 android:id="@+id/etFirstName"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Kamal"
+                                android:hint="@string/hint_first_name_sample"
                                 android:inputType="textPersonName"
                                 android:maxLines="1"
                                 android:paddingVertical="12dp"
@@ -191,7 +191,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="4dp"
-                            android:text="Last Name *"
+                            android:text="@string/label_last_name"
                             android:textColor="#18181B"
                             android:textSize="13sp"
                             android:textStyle="bold" />
@@ -212,7 +212,7 @@
                                 android:id="@+id/etLastName"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:hint="Silva"
+                                android:hint="@string/hint_last_name_sample"
                                 android:inputType="textPersonName"
                                 android:maxLines="1"
                                 android:paddingVertical="12dp"
@@ -231,7 +231,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="4dp"
-                    android:text="Email Address *"
+                    android:text="@string/label_email_required"
                     android:textColor="#18181B"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -252,7 +252,7 @@
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="kamal.silva@prosumer.local"
+                        android:hint="@string/hint_register_email"
                         android:inputType="textEmailAddress"
                         android:maxLines="1"
                         android:paddingVertical="12dp"
@@ -267,7 +267,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="4dp"
-                    android:text="Password *"
+                    android:text="@string/label_password_required"
                     android:textColor="#18181B"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -291,7 +291,7 @@
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter secure password"
+                        android:hint="@string/hint_register_password"
                         android:inputType="textPassword"
                         android:maxLines="1"
                         android:paddingVertical="12dp"
@@ -306,7 +306,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="4dp"
-                    android:text="Phone Number"
+                    android:text="@string/hint_phone_number"
                     android:textColor="#18181B"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -326,7 +326,7 @@
                         android:id="@+id/etPhone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="+94 77 123 4567"
+                        android:hint="@string/hint_phone_sample"
                         android:inputType="phone"
                         android:maxLines="1"
                         android:paddingVertical="12dp"
@@ -341,7 +341,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="4dp"
-                    android:text="Address / Solar Node Location"
+                    android:text="@string/label_address"
                     android:textColor="#18181B"
                     android:textSize="13sp"
                     android:textStyle="bold" />
@@ -361,7 +361,7 @@
                         android:id="@+id/etAddress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="No. 45, Solar Avenue, Colombo"
+                        android:hint="@string/hint_address_sample"
                         android:inputType="textPostalAddress"
                         android:maxLines="2"
                         android:paddingVertical="12dp"
@@ -377,7 +377,7 @@
                     android:layout_height="52dp"
                     android:layout_marginTop="20dp"
                     android:backgroundTint="#18181B"
-                    android:text="Register as Prosumer"
+                    android:text="@string/btn_register_prosumer"
                     android:textColor="#FFFFFF"
                     android:textSize="14sp"
                     android:textStyle="bold"
@@ -399,7 +399,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Already have an account? Sign In"
+                    android:text="@string/link_already_have_account"
                     android:textColor="#71717A"
                     android:textSize="13sp" />
 

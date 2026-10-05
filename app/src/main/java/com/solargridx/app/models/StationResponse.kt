@@ -17,14 +17,39 @@ typealias Station = StationResponse
 /** Represents a single day's operating window inside an OperationalSchedule. */
 data class DailyHours(
     @SerializedName("day", alternate = ["Day"])
-    val day: Int = 0,
+    val day: String = "",
 
     @SerializedName("open", alternate = ["Open"])
     val open: String = "",
 
     @SerializedName("close", alternate = ["Close"])
     val close: String = ""
-)
+) {
+    /** Returns 0 for Sunday, 1 for Monday ... 6 for Saturday, matching DayOfWeek standard */
+    val dayOfWeek: Int
+        get() = when (day.trim().lowercase()) {
+            "sunday", "0" -> 0
+            "monday", "1" -> 1
+            "tuesday", "2" -> 2
+            "wednesday", "3" -> 3
+            "thursday", "4" -> 4
+            "friday", "5" -> 5
+            "saturday", "6" -> 6
+            else -> day.toIntOrNull() ?: 0
+        }
+
+    val dayName: String
+        get() = when (day.trim().lowercase()) {
+            "0", "sunday" -> "Sunday"
+            "1", "monday" -> "Monday"
+            "2", "tuesday" -> "Tuesday"
+            "3", "wednesday" -> "Wednesday"
+            "4", "thursday" -> "Thursday"
+            "5", "friday" -> "Friday"
+            "6", "saturday" -> "Saturday"
+            else -> day
+        }
+}
 
 /** Holds the weekly operating schedule for a station node. */
 data class OperationalSchedule(

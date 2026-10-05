@@ -35,7 +35,7 @@
                 android:layout_height="36dp"
                 android:layout_marginEnd="6dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Profile"
+                android:contentDescription="@string/desc_profile"
                 android:padding="6dp"
                 android:src="@drawable/ic_profile"
                 app:tint="#18181B" />
@@ -48,7 +48,7 @@
                 android:background="#18181B"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
-                android:text="GridOperator"
+                android:text="@string/badge_grid_operator"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -106,7 +106,7 @@
                         android:id="@+id/tvDashboardTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Reservation Dashboard"
+                        android:text="@string/title_dashboard"
                         android:textColor="#09090B"
                         android:textSize="26sp"
                         android:textStyle="bold" />
@@ -164,7 +164,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:letterSpacing="0.05"
-                                    android:text="PENDING BOOKINGS"
+                                    android:text="@string/stat_pending_bookings"
                                     android:textColor="#71717A"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -180,7 +180,7 @@
                                         android:layout_width="18dp"
                                         android:layout_height="18dp"
                                         android:layout_gravity="center"
-                                        android:contentDescription="Pending"
+                                        android:contentDescription="@string/desc_pending"
                                         android:src="@drawable/ic_clock"
                                         app:tint="#EA580C" />
 
@@ -202,7 +202,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Awaiting operational approval"
+                                android:text="@string/desc_pending_sub"
                                 android:textColor="#71717A"
                                 android:textSize="12sp" />
 
@@ -242,7 +242,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:letterSpacing="0.05"
-                                    android:text="APPROVED FUTURE"
+                                    android:text="@string/stat_approved_future"
                                     android:textColor="#71717A"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -258,7 +258,7 @@
                                         android:layout_width="18dp"
                                         android:layout_height="18dp"
                                         android:layout_gravity="center"
-                                        android:contentDescription="Approved"
+                                        android:contentDescription="@string/desc_approved"
                                         android:src="@drawable/ic_calendar"
                                         app:tint="#2563EB" />
 
@@ -280,7 +280,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Confirmed slots scheduled ahead"
+                                android:text="@string/desc_approved_sub"
                                 android:textColor="#71717A"
                                 android:textSize="12sp" />
 
@@ -320,7 +320,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
                                     android:letterSpacing="0.05"
-                                    android:text="ACTIVE SESSIONS"
+                                    android:text="@string/stat_active_sessions"
                                     android:textColor="#71717A"
                                     android:textSize="12sp"
                                     android:textStyle="bold" />
@@ -336,7 +336,7 @@
                                         android:layout_width="18dp"
                                         android:layout_height="18dp"
                                         android:layout_gravity="center"
-                                        android:contentDescription="Active"
+                                        android:contentDescription="@string/desc_active"
                                         android:src="@drawable/ic_lightning"
                                         app:tint="#16A34A" />
 
@@ -358,7 +358,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Currently ongoing or open"
+                                android:text="@string/desc_active_sub"
                                 android:textColor="#71717A"
                                 android:textSize="12sp" />
 
